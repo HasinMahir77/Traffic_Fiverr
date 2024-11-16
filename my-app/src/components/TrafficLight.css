@@ -9,6 +9,12 @@
   flex-wrap: nowrap; /* Ensure items don't stack vertically */
   padding: 10px; /* Add padding to avoid content touching screen edges */
 }
+.modalBody{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
 
 /* Label styling */
 .label {
@@ -19,6 +25,17 @@
   align-items: center;
   margin-right: 5px; /* Small margin below label */
 }
+.sequenceButton {
+  width: 100%;
+  font-size: 12px;
+  padding: 0px;
+}
+.sequenceButtonDiv {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  justify-content: center;
+}
 
 /* Timer container styling */
 .timer {
@@ -26,7 +43,7 @@
   color: #FFFFFF; 
   font-family: 'Digital-7', 'Courier New', Courier, monospace; 
   background-color: #222; 
-  padding: 10px 20px; /* Reduced padding for mobile */
+  padding: 2px 4px; /* Reduced padding for mobile */
   border-radius: 8px; 
   text-align: center;
   width: auto; /* Allow width to be dynamic */

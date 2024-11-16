@@ -1,19 +1,68 @@
 import React, { useState } from 'react';
 import './TrafficLight.css';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import { InputGroup, Form } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-const TrafficLight = ({device}) => {
+const TrafficLight = ({ device }) => {
+  function capitalizeFirstLetter(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  // Light control
   const [activeLight, setActiveLight] = useState('');
-
-  const [time, setTime] = useState('00');
-
-
   const handleClick = (color) => {
     setActiveLight(color);
   };
 
+  // Sequence control popup
+  const [showModal, setShowModal] = useState(false);
+  const openModal = () => {
+    setShowModal(true);
+  };
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
+  // Sequence selections
+  const [sequence, setSequence] = useState([]); // RGY
+  const [sequenceTime, setSequenceTime] = useState([]); // Times for RGY
+
+  const handleAddColor = (color) => {
+    setSequence((prevSequence) => [...prevSequence, color]);
+    setSequenceTime((prevTimes) => [...prevTimes, '']); // Initialize the time with an empty string
+  };
+
+  const handleTimeChange = (index, value) => {
+    // Update time for a specific color in the sequence
+    setSequenceTime((prevTimes) => {
+      const updatedTimes = [...prevTimes];
+      updatedTimes[index] = value;
+      return updatedTimes;
+    });
+  };
+
+  const generateSequenceJson = () => {
+    const sequenceJson = sequence.map((color, index) => ({
+      color,
+      time: sequenceTime[index],
+    }));
+    console.log(sequenceJson); // Log the generated sequence
+    return sequenceJson;
+  };
+
+  const cancelSequenceSelection = () => {
+    setSequence([]);
+    setSequenceTime([]);
+    closeModal();
+  };
+
+  const [time, setTime] = useState('00');
+
   return (
     <div className="parentContainer">
-      <span className='label'>{device? device:''}</span>
+      <span className="label">{device ? device : ''}</span>
       <div className="traffic-light-bar">
         <button
           className={`traffic-light red ${activeLight === 'red' ? 'active' : ''}`}
@@ -30,9 +79,61 @@ const TrafficLight = ({device}) => {
       </div>
 
       <div className="timer">
-        <div className="timer-label">Time</div> 
-        <div className="timer-value">{time}</div> 
+        <div className="timer-value">{time}</div>
+        <Button className="sequenceButton" variant="warning" onClick={openModal}>
+          Sequence
+        </Button>
       </div>
+
+      {/* Mode selection popup */}
+      <Modal keyboard={false} show={showModal} onHide={closeModal} centered>
+        <Modal.Header className="bg-dark text-light">
+          <Modal.Title>Select Sequence</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="modalBody bg-dark text-light">
+          <div className="sequenceButtonDiv">
+            <Button variant="danger" className="RButton" onClick={() => handleAddColor('red')}>
+              Red
+            </Button>
+            <Button variant="success" className="GSButton" onClick={() => handleAddColor('green')}>
+              Green
+            </Button>
+            <Button variant="warning" className="YButton" onClick={() => handleAddColor('yellow')}>
+              Yellow
+            </Button>
+            <Button variant="secondary" onClick={cancelSequenceSelection}>
+              Cancel
+            </Button>
+          </div>
+
+          <div className="selectionDisplay">
+            {sequence.map((color, index) => (
+              <InputGroup size="sm" className="mb-3" key={index}>
+                <InputGroup.Text id="inputGroup-sizing-sm">{capitalizeFirstLetter(color)}</InputGroup.Text>
+                <Form.Control
+                  type="number"
+                  value={sequenceTime[index] || ''}
+                  onChange={(e) => handleTimeChange(index, e.target.value)}
+                  aria-label="Small"
+                  aria-describedby="inputGroup-sizing-sm"
+                  placeholder="Time in seconds"
+                  min="0"
+                  step="1"
+                />
+              </InputGroup>
+            ))}
+            {sequence.length === 3 && sequenceTime.length === 3 && (
+              <Button
+                variant="success"
+                className="GSButton"
+                onClick={() => generateSequenceJson()}
+              >
+                Set Sequence
+              </Button>
+            )}
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };
