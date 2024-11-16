@@ -27,7 +27,6 @@ function App() {
     <div className="App">
       <div className='ManualControls'>
         <div className='header'>
-          <Button variant="secondary" onClick={openModal}>Select Mode</Button>
           <span className='modeLabel'>{mode} mode</span>
         </div>
         
@@ -37,10 +36,12 @@ function App() {
         <TrafficLight className='3' device='3' />
         <TrafficLight className='4' device='4' />
         <TrafficLight className='5' device='5' />
-      </div>
-      <div className='footer'>
+        <div className='footer'>
+        <Button variant="secondary" onClick={openModal}>Select Mode</Button>
           <Button variant="primary" >Save</Button>
         </div>
+      </div>
+      
 
       {/* Mode selection popup */}
       <Modal keyboard={false} show={showModal} backdrop = 'static' onHide={closeModal} centered> 

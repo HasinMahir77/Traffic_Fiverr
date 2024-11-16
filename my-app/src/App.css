@@ -1,6 +1,7 @@
 /* App Container */
 .App {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   background-color: #121212;  /* Dark background */
@@ -20,11 +21,13 @@
   display: flex;
   flex-direction: row;
   gap: 40px;
+  justify-content: center;
 }
 .footer {
   display: flex;
   flex-direction: row;
   gap: 40px;
+  justify-content: center;
 }
 .ManualControls{
   position: fixed;
