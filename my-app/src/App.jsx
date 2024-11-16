@@ -40,7 +40,7 @@ function App() {
       </div>
 
       {/* Mode selection popup */}
-      <Modal show={showModal} onHide={closeModal} centered>
+      <Modal keyboard={false} show={showModal} backdrop = 'static' onHide={closeModal} centered>
         <Modal.Header className="bg-dark text-light">
           <Modal.Title>Select Mode</Modal.Title>
         </Modal.Header>

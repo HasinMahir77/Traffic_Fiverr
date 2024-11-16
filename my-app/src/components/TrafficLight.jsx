@@ -4,7 +4,7 @@ import './TrafficLight.css';
 const TrafficLight = ({device}) => {
   const [activeLight, setActiveLight] = useState('');
 
-  const [time, setTime] = useState('00:00');
+  const [time, setTime] = useState('00');
 
 
   const handleClick = (color) => {
