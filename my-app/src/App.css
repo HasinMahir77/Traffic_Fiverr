@@ -21,6 +21,11 @@
   flex-direction: row;
   gap: 40px;
 }
+.footer {
+  display: flex;
+  flex-direction: row;
+  gap: 40px;
+}
 .ManualControls{
   position: fixed;
   top: 10px;

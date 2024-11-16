@@ -38,6 +38,9 @@ function App() {
         <TrafficLight className='4' device='4' />
         <TrafficLight className='5' device='5' />
       </div>
+      <div className='footer'>
+          <Button variant="primary" >Save</Button>
+        </div>
 
       {/* Mode selection popup */}
       <Modal keyboard={false} show={showModal} backdrop = 'static' onHide={closeModal} centered> 
