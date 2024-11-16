@@ -49,6 +49,7 @@ const TrafficLight = ({ device }) => {
       time: sequenceTime[index],
     }));
     console.log(sequenceJson); // Log the generated sequence
+    closeModal();
     return sequenceJson;
   };
 
