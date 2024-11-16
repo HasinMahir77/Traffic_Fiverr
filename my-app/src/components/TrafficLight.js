@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './TrafficLight.css';
 
-const TrafficLight = () => {
+const TrafficLight = ({device}) => {
   const [activeLight, setActiveLight] = useState('');
 
   const [time, setTime] = useState('00:00');
@@ -13,6 +13,7 @@ const TrafficLight = () => {
 
   return (
     <div className="parentContainer">
+      <span className='label'>{device? device:''}</span>
       <div className="traffic-light-bar">
         <button
           className={`traffic-light red ${activeLight === 'red' ? 'active' : ''}`}
