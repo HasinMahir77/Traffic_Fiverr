@@ -25,12 +25,16 @@ function App() {
 
   return (
     <div className="App">
+      <div className='controlHeader'>
+        <Button variant="primary">Add Device</Button>
+        <Button variant="danger">Remove Device</Button>
+      </div>
       <div className='ManualControls'>
         <div className='header'>
           <span className='modeLabel'>{mode} mode</span>
         </div>
         
-        <TrafficLight className='M' device='M' />
+        <TrafficLight className='M' device='0' />
         <TrafficLight className='1' device='1' />
         <TrafficLight className='2' device='2' />
         <TrafficLight className='3' device='3' />

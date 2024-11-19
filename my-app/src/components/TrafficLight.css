@@ -4,6 +4,7 @@
   align-items: center; /* Align the items horizontally */
   gap: 10px; /* Reduced gap between elements */
   width: 90vw; /* Make sure it takes up 90% of the viewport width */
+  height: 12vh;
   max-width: 380px; /* Limit to a maximum width (for 18:9 phones) */
   margin: 0 auto; /* Center container horizontally */
   flex-wrap: nowrap; /* Ensure items don't stack vertically */

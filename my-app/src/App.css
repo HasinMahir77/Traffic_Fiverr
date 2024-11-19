@@ -31,8 +31,16 @@
 }
 .ManualControls{
   position: fixed;
-  top: 10px;
-  height: 80vh;
+  top: 10vh;
+  height: 75vh;
+}
+.controlHeader{
+  height: 5vh;
+  position: fixed;
+  top: 2vh;
+  display: flex;
+  flex-direction: row;
+  gap: 10vw;
 }
 
 
