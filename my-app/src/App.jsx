@@ -9,6 +9,7 @@ import Button from 'react-bootstrap/Button';
 function App() {
   const [showModal, setShowModal] = useState(false);
   const [mode, setMode] = useState('Manual');
+  const [runSequence, setRunSequence] = useState([]);
 
   const openModal = () => {
     setShowModal(true);

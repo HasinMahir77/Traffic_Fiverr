@@ -5,10 +5,12 @@ import Modal from 'react-bootstrap/Modal';
 import { InputGroup, Form } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const TrafficLight = ({ device }) => {
+const TrafficLight = ({ device, runSequence }) => {
   function capitalizeFirstLetter(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
+  const [greenButton, setGreenButton] = useState(false);
+
 
   // Light control
   const [activeLight, setActiveLight] = useState('');
@@ -50,6 +52,7 @@ const TrafficLight = ({ device }) => {
     }));
     console.log(sequenceJson); // Log the generated sequence
     closeModal();
+    setGreenButton(true);
     return sequenceJson;
   };
 
@@ -81,13 +84,13 @@ const TrafficLight = ({ device }) => {
 
       <div className="timer">
         <div className="timer-value">{time}</div>
-        <Button className="sequenceButton" variant="warning" onClick={openModal}>
+        <Button className={greenButton?"active sequenceButton":"sequenceButton"} variant="warning" onClick={openModal}>
           Sequence
         </Button>
       </div>
 
       {/* Mode selection popup */}
-      <Modal keyboard={false} show={showModal} onHide={closeModal} centered>
+      <Modal backdrop='static' keyboard={false} show={showModal} onHide={closeModal} centered>
         <Modal.Header className="bg-dark text-light">
           <Modal.Title>Select Sequence</Modal.Title>
         </Modal.Header>
