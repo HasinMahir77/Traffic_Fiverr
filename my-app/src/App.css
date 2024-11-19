@@ -9,6 +9,10 @@
   margin: 0;
   padding: 0;  
 }
+.demoW{
+  margin: 5px;
+  color: white;
+}
 .modeLabel {
   font-size: 18px;
   color: white;

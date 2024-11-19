@@ -45,6 +45,7 @@ function App() {
         <Button variant="secondary" onClick={openModal}>Select Mode</Button>
           <Button variant="primary" >Save</Button>
         </div>
+        <span className='demoW'>This is an early demo. There will be more features and the lights will glow to reflect the lights in real life. Tap on them to see glow.</span>
       </div>
       
 

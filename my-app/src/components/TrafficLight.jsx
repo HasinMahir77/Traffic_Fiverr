@@ -84,7 +84,7 @@ const TrafficLight = ({ device, runSequence }) => {
 
       <div className="timer">
         <div className="timer-value">{time}</div>
-        <Button className={greenButton?"active sequenceButton":"sequenceButton"} variant="warning" onClick={openModal}>
+        <Button className={greenButton?"activeS sequenceButton":"sequenceButton"} variant="warning" onClick={openModal}>
           Sequence
         </Button>
       </div>
