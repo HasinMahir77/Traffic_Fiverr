@@ -33,6 +33,7 @@
 }
 .active{
   background-color: #004e00 !important;
+  border-color: #004e00 !important;
 }
 .sequenceButtonDiv {
   display: flex;
