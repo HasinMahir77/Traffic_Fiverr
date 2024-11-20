@@ -1,0 +1,12 @@
+{
+    "device1": {
+        "0": {"color": "red", "time": 20},
+        "1": {"color": "yellow", "time": 4},
+        "2": {"color": "green", "time": 20}
+    },
+    "device2": {
+        "0": {"color": "red", "time": 25},
+        "1": {"color": "yellow", "time": 4},
+        "2": {"color": "green", "time": 25}
+    }
+}
