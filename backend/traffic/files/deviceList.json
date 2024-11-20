@@ -1,20 +1,16 @@
 {
-    "devices": [
-        {
-            "type" : "master",
-            "id": "device1",
-            "name": "Device 1",
-            "ip": "192.168.1.10",
-            "mac": "00:1A:2B:3C:4D:5E",
-            "status": 1
-        },
-        {
-            "type" : "slave",
-            "id": "device2",
-            "name": "Device 1",
-            "ip": "192.168.1.11",
-            "mac": "00:1A:2B:3C:4D:5F",
-            "status": 0
-        }
-    ]
+    "device1": {
+        "type": "master",
+        "name": "Device 1",
+        "ip": "192.168.1.10",
+        "mac": "00:1A:2B:3C:4D:5E",
+        "status": 1
+    },
+    "device2": {
+        "type": "slave",
+        "name": "Device 2",
+        "ip": "192.168.1.11",
+        "mac": "00:1A:2B:3C:4D:5F",
+        "status": 0
+    }
 }
