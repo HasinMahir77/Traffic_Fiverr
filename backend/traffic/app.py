@@ -35,7 +35,6 @@ def getDevice(deviceId):
         return jsonify({"error": str(e)}), 500
 
 
-
 #POST Methods here
 @app.route('/addDevice/<deviceId>', methods=['POST'])
 def addDevice(deviceId):
@@ -57,6 +56,29 @@ def addDevice(deviceId):
         return jsonify({"error": "Error decoding the device list file"}), 500
     except Exception as e:
         return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+    
+@app.route('/setSequence/<deviceId>', methods=['POST'])
+def setSequence(deviceId):
+    try:
+        with open(sequenceListPath, 'r') as file:
+            sequence_list = json.load(file)
+        if deviceId in sequence_list:
+            return jsonify({"error": "Device ID already exists"}), 400
+        new_sequence = request.get_json()
+        sequence_list[deviceId] = new_sequence
+
+        with open(sequenceListPath, 'w') as file:
+            json.dump(sequence_list, file, indent=4)
+        return jsonify({"message": "Sequence added successfully"}), 201
+
+    except FileNotFoundError:
+        return jsonify({"error": "Sequence list file not found"}), 500
+    except json.JSONDecodeError:
+        return jsonify({"error": "Error decoding the sequence list file"}), 500
+    except Exception as e:
+        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+    
+    
 if __name__ == '__main__':
     app.run(debug=True)
 
