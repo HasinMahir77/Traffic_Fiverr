@@ -1,4 +1,3 @@
-import logo from "./logo.svg";
 import "./App.css";
 import Modal from "react-bootstrap/Modal";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -31,12 +30,10 @@ function App() {
     let interval;
 
     if (Object.keys(deviceList).length === 0) {
-      // Only start the interval if deviceList is empty
       interval = setInterval(() => {
         fetchAllDevices(); // Try fetching devices every 0.5 seconds
       }, 500);
     }
-
     // Clear the interval if data is received or on component unmount
     if (Object.keys(deviceList).length > 0) {
       clearInterval(interval);
@@ -62,10 +59,50 @@ function App() {
 
   // Add Device States
   const [addModal, setAddModal] = useState(false);
+  const [newDeviceName, setNewDeviceName] = useState("");
+  const handleNewDeviceNameChange = (event) => {
+    setNewDeviceName(event.target.value);
+  };
+  const [newDeviceIp, setNewDeviceIp] = useState("");
+  const handleNewDeviceIpChange = (event) => {
+    setNewDeviceIp(event.target.value);
+  };
+  const addDevice = async () => {
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:5000/addDevice/${newDeviceName}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            newDeviceName: {
+              type: "slave",
+              ip: newDeviceIp,
+              status: 1,
+            },
+          }), // Send device data as JSON
+        }
+      );
+
+      const result = await response.json();
+      if (response.ok) {
+        alert(result.message); // Success message
+      } else {
+        alert(result.error); // Error message
+      }
+    } catch (error) {
+      console.error("Error adding device:", error.message);
+    }
+    closeAddModal();
+  };
   const openAddModal = () => {
     setAddModal(true);
   };
   const closeAddModal = () => {
+    setNewDeviceIp("");
+    setNewDeviceName("");
     setAddModal(false);
   };
 
@@ -149,6 +186,16 @@ function App() {
         </Modal.Header>
         <Modal.Body>
           <InputGroup size="sm" className="mb-3">
+            <InputGroup.Text id="inputGroup-sizing-sm">Name</InputGroup.Text>
+            <Form.Control
+              placeholder="Device X"
+              aria-label="small"
+              aria-describedby="inputGroup-sizing-sm"
+              onChange={handleNewDeviceNameChange}
+              value={newDeviceName}
+            />
+          </InputGroup>
+          <InputGroup size="sm" className="mb-3">
             <InputGroup.Text id="inputGroup-sizing-sm">
               IP Address
             </InputGroup.Text>
@@ -156,8 +203,33 @@ function App() {
               placeholder="0.0.0.0"
               aria-label="small"
               aria-describedby="inputGroup-sizing-sm"
+              onChange={handleNewDeviceIpChange}
+              value={newDeviceIp}
             />
           </InputGroup>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={closeAddModal}>
+            Cancel
+          </Button>
+          <Button onClick={addDevice} variant="primary">
+            Add
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Remove Device popup */}
+      <Modal
+        show={closeModal}
+        onHide={closeCloseModal}
+        backdrop="static"
+        keyboard={false}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Remove Device</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
           <DropdownButton id="dropdown-basic-button" title="Select Device">
             {Object.keys(deviceList).length > 0 ? (
               Object.keys(deviceList).map((deviceId) => (
@@ -172,33 +244,10 @@ function App() {
           </DropdownButton>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={closeAddModal}>
-            Close
-          </Button>
-          <Button variant="primary">Understood</Button>
-        </Modal.Footer>
-      </Modal>
-
-      {/* Remove Device popup */}
-      <Modal
-        show={closeModal}
-        onHide={closeCloseModal}
-        backdrop="static"
-        keyboard={false}
-        centered
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Close Device</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          I will not close if you click outside me. Do not even try to press
-          escape key.
-        </Modal.Body>
-        <Modal.Footer>
           <Button variant="secondary" onClick={closeCloseModal}>
-            Close
+            Cancel
           </Button>
-          <Button variant="primary">Understood</Button>
+          <Button variant="danger">Remove</Button>
         </Modal.Footer>
       </Modal>
     </div>
