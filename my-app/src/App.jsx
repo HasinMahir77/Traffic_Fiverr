@@ -117,6 +117,7 @@ function App() {
   };
   const handleRemoveDeviceSelect = (key) => {
     setRemoveDeviceKey(key);
+    console.log("Selected: " + key);
   };
   const removeDevice = async () => {
     try {
@@ -260,12 +261,16 @@ function App() {
           <DropdownButton
             onSelect={handleRemoveDeviceSelect}
             id="dropdown-basic-button"
-            title="Select Device"
+            title={removeDeviceKey === "" ? "Select Device" : removeDeviceKey}
           >
             {Object.keys(deviceList).length > 0 ? (
               Object.keys(deviceList).map((key) => (
-                <Dropdown.Item key={key} href={`#${key}`}>
-                  {key} {/* Map to the key for the device hehe */}
+                <Dropdown.Item
+                  key={key}
+                  as="button" // Turn this into a button to avoid refresh
+                  eventKey={key} // Pass the key as the eventKey
+                >
+                  {key}
                 </Dropdown.Item>
               ))
             ) : (
