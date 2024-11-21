@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
-import './TrafficLight.css';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import { InputGroup, Form } from 'react-bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import React, { useState } from "react";
+import "./TrafficLight.css";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
+import { InputGroup, Form } from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
 
-const TrafficLight = ({ device }) => {
+const TrafficLight = ({ deviceName }) => {
   function capitalizeFirstLetter(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
   // Light control
-  const [activeLight, setActiveLight] = useState('');
+  const [activeLight, setActiveLight] = useState("");
   const handleClick = (color) => {
     setActiveLight(color);
   };
@@ -31,7 +31,7 @@ const TrafficLight = ({ device }) => {
 
   const handleAddColor = (color) => {
     setSequence((prevSequence) => [...prevSequence, color]);
-    setSequenceTime((prevTimes) => [...prevTimes, '']); // Initialize the time with an empty string
+    setSequenceTime((prevTimes) => [...prevTimes, ""]); // Initialize the time with an empty string
   };
 
   const handleTimeChange = (index, value) => {
@@ -59,29 +59,39 @@ const TrafficLight = ({ device }) => {
     closeModal();
   };
 
-  const [time, setTime] = useState('00');
+  const [time, setTime] = useState("00");
 
   return (
     <div className="parentContainer">
-      <span className="label">{device ? device : ''}</span>
+      <span className="label">{deviceName ? deviceName : ""}</span>
       <div className="traffic-light-bar">
         <button
-          className={`traffic-light red ${activeLight === 'red' ? 'active' : ''}`}
-          onClick={() => handleClick('red')}
+          className={`traffic-light red ${
+            activeLight === "red" ? "active" : ""
+          }`}
+          onClick={() => handleClick("red")}
         ></button>
         <button
-          className={`traffic-light yellow ${activeLight === 'yellow' ? 'active' : ''}`}
-          onClick={() => handleClick('yellow')}
+          className={`traffic-light yellow ${
+            activeLight === "yellow" ? "active" : ""
+          }`}
+          onClick={() => handleClick("yellow")}
         ></button>
         <button
-          className={`traffic-light green ${activeLight === 'green' ? 'active' : ''}`}
-          onClick={() => handleClick('green')}
+          className={`traffic-light green ${
+            activeLight === "green" ? "active" : ""
+          }`}
+          onClick={() => handleClick("green")}
         ></button>
       </div>
 
       <div className="timer">
         <div className="timer-value">{time}</div>
-        <Button className="sequenceButton" variant="warning" onClick={openModal}>
+        <Button
+          className="sequenceButton"
+          variant="warning"
+          onClick={openModal}
+        >
           Sequence
         </Button>
       </div>
@@ -93,13 +103,25 @@ const TrafficLight = ({ device }) => {
         </Modal.Header>
         <Modal.Body className="modalBody bg-dark text-light">
           <div className="sequenceButtonDiv">
-            <Button variant="danger" className="RButton" onClick={() => handleAddColor('red')}>
+            <Button
+              variant="danger"
+              className="RButton"
+              onClick={() => handleAddColor("red")}
+            >
               Red
             </Button>
-            <Button variant="success" className="GSButton" onClick={() => handleAddColor('green')}>
+            <Button
+              variant="success"
+              className="GSButton"
+              onClick={() => handleAddColor("green")}
+            >
               Green
             </Button>
-            <Button variant="warning" className="YButton" onClick={() => handleAddColor('yellow')}>
+            <Button
+              variant="warning"
+              className="YButton"
+              onClick={() => handleAddColor("yellow")}
+            >
               Yellow
             </Button>
             <Button variant="secondary" onClick={cancelSequenceSelection}>
@@ -110,10 +132,12 @@ const TrafficLight = ({ device }) => {
           <div className="selectionDisplay">
             {sequence.map((color, index) => (
               <InputGroup size="sm" className="mb-3" key={index}>
-                <InputGroup.Text id="inputGroup-sizing-sm">{capitalizeFirstLetter(color)}</InputGroup.Text>
+                <InputGroup.Text id="inputGroup-sizing-sm">
+                  {capitalizeFirstLetter(color)}
+                </InputGroup.Text>
                 <Form.Control
                   type="number"
-                  value={sequenceTime[index] || ''}
+                  value={sequenceTime[index] || ""}
                   onChange={(e) => handleTimeChange(index, e.target.value)}
                   aria-label="Small"
                   aria-describedby="inputGroup-sizing-sm"
