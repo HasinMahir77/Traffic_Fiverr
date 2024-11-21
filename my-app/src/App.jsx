@@ -26,6 +26,7 @@ function App() {
       console.log(err.message); // Log the error message
     }
   };
+
   const fetchAllSequences = async () => {
     try {
       const response = await fetch(`http://127.0.0.1:5000/getAllSequences/`);
@@ -42,28 +43,8 @@ function App() {
   };
 
   useEffect(() => {
-    let deviceInterval;
-    let sequenceInterval;
-    // Start fetching devices if deviceList is empty
-    if (Object.keys(deviceList).length === 0) {
-      deviceInterval = setInterval(() => {
-        fetchAllDevices(); // Fetch devices
-      }, 500);
-    }
-    // Start fetching sequences if sequenceList is empty
-    if (Object.keys(sequenceList).length === 0) {
-      sequenceInterval = setInterval(() => {
-        fetchAllSequences(); // Fetch sequences
-      }, 500);
-    }
-    return () => {
-      if (Object.keys(deviceList).length > 0) {
-        clearInterval(deviceInterval);
-      }
-      if (Object.keys(sequenceList).length > 0) {
-        clearInterval(sequenceInterval);
-      }
-    };
+    fetchAllDevices();
+    fetchAllSequences();
   }, []);
 
   // Mode States
@@ -190,7 +171,7 @@ function App() {
               key={key} // use device key as the key for React
               className={key} // You can use the key for className or any other prop
               deviceName={key} // Pass the key as deviceName
-              currentSequence={key}
+              initialSequence={sequenceList[key]}
             />
           ))
         ) : (

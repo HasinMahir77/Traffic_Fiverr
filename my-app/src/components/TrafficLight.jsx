@@ -5,7 +5,8 @@ import Modal from "react-bootstrap/Modal";
 import { InputGroup, Form } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-const TrafficLight = ({ deviceName, currentSequence }) => {
+const TrafficLight = ({ deviceName, initialSequence }) => {
+  const [currentSequence, setCurrentSequence] = useState(initialSequence);
   function capitalizeFirstLetter(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
@@ -56,6 +57,33 @@ const TrafficLight = ({ deviceName, currentSequence }) => {
   const cancelSequenceSelection = () => {
     setSequence([]);
     setSequenceTime([]);
+    closeModal();
+  };
+  const setNewSequence = async () => {
+    try {
+      const data = generateSequenceJson();
+      console.log(data);
+      const response = await fetch(
+        `http://127.0.0.1:5000/changeSequence/${deviceName}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data), // Send device data as JSON
+        }
+      );
+
+      const result = await response.json();
+      if (response.ok) {
+        alert(result.message); // Success message
+        setCurrentSequence(data);
+      } else {
+        alert(result.error); // Error message
+      }
+    } catch (error) {
+      console.error("Error adding device:", error.message);
+    }
     closeModal();
   };
 
@@ -151,7 +179,7 @@ const TrafficLight = ({ deviceName, currentSequence }) => {
               <Button
                 variant="success"
                 className="GSButton"
-                onClick={() => generateSequenceJson()}
+                onClick={() => setNewSequence()}
               >
                 Set Sequence
               </Button>
