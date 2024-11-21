@@ -140,6 +140,7 @@ function App() {
     } catch (error) {
       console.error("Error adding device:", error.message);
     }
+    fetchAllDevices();
     closeCloseModal();
   };
 
