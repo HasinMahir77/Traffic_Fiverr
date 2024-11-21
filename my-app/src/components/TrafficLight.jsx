@@ -131,27 +131,39 @@ const TrafficLight = ({ deviceName, initialSequence }) => {
         </Modal.Header>
         <Modal.Body className="modalBody bg-dark text-light">
           <div className="sequenceButtonDiv">
-            <Button
-              variant="danger"
-              className="RButton"
-              onClick={() => handleAddColor("red")}
-            >
-              Red
-            </Button>
-            <Button
-              variant="success"
-              className="GSButton"
-              onClick={() => handleAddColor("green")}
-            >
-              Green
-            </Button>
-            <Button
-              variant="warning"
-              className="YButton"
-              onClick={() => handleAddColor("yellow")}
-            >
-              Yellow
-            </Button>
+            {sequence.includes("red") ? (
+              <></>
+            ) : (
+              <Button
+                variant="danger"
+                className="RButton"
+                onClick={() => handleAddColor("red")}
+              >
+                Red
+              </Button>
+            )}
+            {sequence.includes("green") ? (
+              <></>
+            ) : (
+              <Button
+                variant="success"
+                className="GSButton"
+                onClick={() => handleAddColor("green")}
+              >
+                Green
+              </Button>
+            )}
+            {sequence.includes("yellow") ? (
+              <></>
+            ) : (
+              <Button
+                variant="warning"
+                className="YButton"
+                onClick={() => handleAddColor("yellow")}
+              >
+                Yellow
+              </Button>
+            )}
             <Button variant="secondary" onClick={cancelSequenceSelection}>
               Cancel
             </Button>
