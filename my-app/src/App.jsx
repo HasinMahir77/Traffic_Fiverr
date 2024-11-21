@@ -1,16 +1,48 @@
-import logo from "./logo.svg";
 import "./App.css";
 import Modal from "react-bootstrap/Modal";
 import "bootstrap/dist/css/bootstrap.min.css";
 import TrafficLight from "./components/TrafficLight";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import { InputGroup, Form } from "react-bootstrap";
 import Dropdown from "react-bootstrap/Dropdown";
 import DropdownButton from "react-bootstrap/DropdownButton";
 
 function App() {
-  //Mode States
+  const [deviceList, setDeviceList] = useState({});
+
+  const fetchAllDevices = async () => {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/getAllDevices/`);
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json(); // Await the JSON data
+      console.log(data); // Log the data
+      setDeviceList(data); // Update the state with the fetched data
+    } catch (err) {
+      console.log(err.message); // Log the error message
+    }
+  };
+
+  useEffect(() => {
+    let interval;
+
+    if (Object.keys(deviceList).length === 0) {
+      interval = setInterval(() => {
+        fetchAllDevices(); // Try fetching devices every 0.5 seconds
+      }, 500);
+    }
+    // Clear the interval if data is received or on component unmount
+    if (Object.keys(deviceList).length > 0) {
+      clearInterval(interval);
+    }
+
+    return () => clearInterval(interval); // Cleanup interval on component unmount
+  }, [deviceList]); // Effect runs when deviceList changes
+
+  // Mode States
   const [modeModal, setModeModal] = useState(false);
 
   const openModeModal = () => {
@@ -24,30 +56,91 @@ function App() {
     setMode(newMode);
     closeModeModal();
   };
-  //Add Device States
+
+  // Add Device States
   const [addModal, setAddModal] = useState(false);
+  const [newDeviceName, setNewDeviceName] = useState("");
+  const handleNewDeviceNameChange = (event) => {
+    setNewDeviceName(event.target.value);
+  };
+  const [newDeviceIp, setNewDeviceIp] = useState("");
+  const handleNewDeviceIpChange = (event) => {
+    setNewDeviceIp(event.target.value);
+  };
+  const addDevice = async () => {
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:5000/addDevice/${newDeviceName}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            type: "slave",
+            ip: newDeviceIp,
+            status: 1,
+          }), // Send device data as JSON
+        }
+      );
+
+      const result = await response.json();
+      fetchAllDevices();
+      if (response.ok) {
+        alert(result.message); // Success message
+      } else {
+        alert(result.error); // Error message
+      }
+    } catch (error) {
+      console.error("Error adding device:", error.message);
+    }
+    closeAddModal();
+  };
   const openAddModal = () => {
     setAddModal(true);
   };
   const closeAddModal = () => {
+    setNewDeviceIp("");
+    setNewDeviceName("");
     setAddModal(false);
   };
-  const handleAddDevice = (newMode) => {
-    //Code to add device
-    closeModeModal();
-  };
 
-  //Close Device States
+  // Remove Device States
   const [closeModal, setCloseModal] = useState(false);
+  const [removeDeviceKey, setRemoveDeviceKey] = useState("");
   const openCloseModal = () => {
     setCloseModal(true);
   };
   const closeCloseModal = () => {
     setCloseModal(false);
+    setRemoveDeviceKey("");
   };
-
-  const handleDeleteDevice = (deviceId) => {
-    //Code to delete device
+  const handleRemoveDeviceSelect = (key) => {
+    setRemoveDeviceKey(key);
+    console.log("Selected: " + key);
+  };
+  const removeDevice = async () => {
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:5000/removeDevice/${removeDeviceKey}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json", // Set headers as needed
+            // Add other headers if required (e.g., Authorization)
+          },
+        }
+      );
+      const result = await response.json();
+      if (response.ok) {
+        alert(result.message); // Success message
+      } else {
+        alert(result.error); // Error message
+      }
+    } catch (error) {
+      console.error("Error adding device:", error.message);
+    }
+    fetchAllDevices();
     closeCloseModal();
   };
 
@@ -66,12 +159,19 @@ function App() {
           <span className="modeLabel">{mode} mode</span>
         </div>
 
-        <TrafficLight className="M" device="0" />
-        <TrafficLight className="1" device="1" />
-        <TrafficLight className="2" device="2" />
-        <TrafficLight className="3" device="3" />
-        <TrafficLight className="4" device="4" />
-        <TrafficLight className="5" device="5" />
+        {/* Dynamically render TrafficLights */}
+        {Object.keys(deviceList).length > 0 ? (
+          Object.keys(deviceList).map((key) => (
+            <TrafficLight
+              key={key} // use device key as the key for React
+              className={key} // You can use the key for className or any other prop
+              deviceName={key} // Pass the key as deviceName
+            />
+          ))
+        ) : (
+          <p>No devices available</p> // Show a message if no devices exist
+        )}
+
         <div className="footer">
           <Button variant="secondary" onClick={openModeModal}>
             Select Mode
@@ -122,6 +222,16 @@ function App() {
         </Modal.Header>
         <Modal.Body>
           <InputGroup size="sm" className="mb-3">
+            <InputGroup.Text id="inputGroup-sizing-sm">Name</InputGroup.Text>
+            <Form.Control
+              placeholder="Device X"
+              aria-label="small"
+              aria-describedby="inputGroup-sizing-sm"
+              onChange={handleNewDeviceNameChange}
+              value={newDeviceName}
+            />
+          </InputGroup>
+          <InputGroup size="sm" className="mb-3">
             <InputGroup.Text id="inputGroup-sizing-sm">
               IP Address
             </InputGroup.Text>
@@ -129,19 +239,18 @@ function App() {
               placeholder="0.0.0.0"
               aria-label="small"
               aria-describedby="inputGroup-sizing-sm"
+              onChange={handleNewDeviceIpChange}
+              value={newDeviceIp}
             />
           </InputGroup>
-          <DropdownButton id="dropdown-basic-button" title="Select Device">
-            <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-            <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-            <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-          </DropdownButton>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={closeAddModal}>
-            Close
+            Cancel
           </Button>
-          <Button variant="primary">Understood</Button>
+          <Button onClick={addDevice} variant="primary">
+            Add
+          </Button>
         </Modal.Footer>
       </Modal>
 
@@ -154,17 +263,36 @@ function App() {
         centered
       >
         <Modal.Header closeButton>
-          <Modal.Title>Close Device</Modal.Title>
+          <Modal.Title>Remove Device</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          I will not close if you click outside me. Do not even try to press
-          escape key.
+          <DropdownButton
+            onSelect={handleRemoveDeviceSelect}
+            id="dropdown-basic-button"
+            title={removeDeviceKey === "" ? "Select Device" : removeDeviceKey}
+          >
+            {Object.keys(deviceList).length > 0 ? (
+              Object.keys(deviceList).map((key) => (
+                <Dropdown.Item
+                  key={key}
+                  as="button" // Turn this into a button to avoid refresh
+                  eventKey={key} // Pass the key as the eventKey
+                >
+                  {key}
+                </Dropdown.Item>
+              ))
+            ) : (
+              <Dropdown.Item disabled>No devices available</Dropdown.Item>
+            )}
+          </DropdownButton>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={closeCloseModal}>
-            Close
+            Cancel
           </Button>
-          <Button variant="primary">Understood</Button>
+          <Button variant="danger" onClick={removeDevice}>
+            Remove
+          </Button>
         </Modal.Footer>
       </Modal>
     </div>
