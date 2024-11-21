@@ -13,7 +13,7 @@ function App() {
   const [deviceList, setDeviceList] = useState({});
   const fetchAllDevices = async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:5000/getDevice/`);
+      const response = await fetch(`http://127.0.0.1:5000/getAllDevices/`);
       if (!response.ok) {
         throw new Error(`Error: ${response.status} ${response.statusText}`);
       }
@@ -25,6 +25,7 @@ function App() {
       console.log(err.message); // Log the error message
     }
   };
+  fetchAllDevices();
   //Mode States
   const [modeModal, setModeModal] = useState(false);
 
