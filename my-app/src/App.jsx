@@ -77,16 +77,15 @@ function App() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            newDeviceName: {
-              type: "slave",
-              ip: newDeviceIp,
-              status: 1,
-            },
+            type: "slave",
+            ip: newDeviceIp,
+            status: 1,
           }), // Send device data as JSON
         }
       );
 
       const result = await response.json();
+      fetchAllDevices();
       if (response.ok) {
         alert(result.message); // Success message
       } else {
@@ -106,13 +105,41 @@ function App() {
     setAddModal(false);
   };
 
-  // Close Device States
+  // Remove Device States
   const [closeModal, setCloseModal] = useState(false);
+  const [removeDeviceKey, setRemoveDeviceKey] = useState("");
   const openCloseModal = () => {
     setCloseModal(true);
   };
   const closeCloseModal = () => {
     setCloseModal(false);
+    setRemoveDeviceKey("");
+  };
+  const handleRemoveDeviceSelect = (key) => {
+    setRemoveDeviceKey(key);
+  };
+  const removeDevice = async () => {
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:5000/removeDevice/${removeDeviceKey}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json", // Set headers as needed
+            // Add other headers if required (e.g., Authorization)
+          },
+        }
+      );
+      const result = await response.json();
+      if (response.ok) {
+        alert(result.message); // Success message
+      } else {
+        alert(result.error); // Error message
+      }
+    } catch (error) {
+      console.error("Error adding device:", error.message);
+    }
+    closeCloseModal();
   };
 
   return (
@@ -230,12 +257,15 @@ function App() {
           <Modal.Title>Remove Device</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <DropdownButton id="dropdown-basic-button" title="Select Device">
+          <DropdownButton
+            onSelect={handleRemoveDeviceSelect}
+            id="dropdown-basic-button"
+            title="Select Device"
+          >
             {Object.keys(deviceList).length > 0 ? (
-              Object.keys(deviceList).map((deviceId) => (
-                <Dropdown.Item key={deviceId} href={`#${deviceId}`}>
-                  {deviceList[deviceId].name}{" "}
-                  {/* Assuming each device has a 'name' property */}
+              Object.keys(deviceList).map((key) => (
+                <Dropdown.Item key={key} href={`#${key}`}>
+                  {key} {/* Map to the key for the device hehe */}
                 </Dropdown.Item>
               ))
             ) : (
@@ -247,7 +277,9 @@ function App() {
           <Button variant="secondary" onClick={closeCloseModal}>
             Cancel
           </Button>
-          <Button variant="danger">Remove</Button>
+          <Button variant="danger" onClick={removeDevice}>
+            Remove
+          </Button>
         </Modal.Footer>
       </Modal>
     </div>
