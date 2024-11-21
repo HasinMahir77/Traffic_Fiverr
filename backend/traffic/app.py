@@ -35,7 +35,6 @@ def getDevice(deviceId):
         return jsonify({"error": str(e)}), 500
 
 
-
 #POST Methods here
 @app.route('/addDevice/<deviceId>', methods=['POST']) 
 def addDevice(deviceId): #Have to add default sequence as well!
