@@ -10,6 +10,30 @@ deviceListPath = r'E:\Projects\Traffic_Fiverr\backend\traffic\files\deviceList.j
 sequenceListPath = r'E:\Projects\Traffic_Fiverr\backend\traffic\files\sequenceList.json'
 
 #GET Methods here
+@app.route('/getAllDevices/', methods=['GET'])
+def getAllDevices():
+    print(f"Received request for all devices")
+    try:
+        with open(deviceListPath, 'r') as file:
+            deviceList = json.load(file)
+            if deviceList is None:
+                return jsonify({"error": "Device not found"}), 404
+        return jsonify(deviceList)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/getAllSequences/', methods=['GET'])
+def getAllSequences():
+    print(f"Received request for all sequences")
+    try:
+        with open(sequenceListPath, 'r') as file:
+            sequence = json.load(file)
+            if sequence is None:
+                return jsonify({"error": "Sequence List not found"}), 404
+        return jsonify(sequence)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
 @app.route('/getDevice/<deviceId>', methods=['GET'])
 def getDevice(deviceId):
     print(f"Received request for device: {deviceId}")
