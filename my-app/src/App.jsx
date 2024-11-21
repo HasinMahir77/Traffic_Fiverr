@@ -10,6 +10,7 @@ import DropdownButton from "react-bootstrap/DropdownButton";
 
 function App() {
   const [deviceList, setDeviceList] = useState({});
+  const [sequenceList, setSequenceList] = useState({});
 
   const fetchAllDevices = async () => {
     try {
@@ -26,21 +27,25 @@ function App() {
     }
   };
 
+  const fetchAllSequences = async () => {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/getAllSequences/`);
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json(); // Await the JSON data
+      console.log(data); // Log the data
+      setSequenceList(data); // Update the state with the fetched data
+    } catch (err) {
+      console.log(err.message); // Log the error message
+    }
+  };
+
   useEffect(() => {
-    let interval;
-
-    if (Object.keys(deviceList).length === 0) {
-      interval = setInterval(() => {
-        fetchAllDevices(); // Try fetching devices every 0.5 seconds
-      }, 500);
-    }
-    // Clear the interval if data is received or on component unmount
-    if (Object.keys(deviceList).length > 0) {
-      clearInterval(interval);
-    }
-
-    return () => clearInterval(interval); // Cleanup interval on component unmount
-  }, [deviceList]); // Effect runs when deviceList changes
+    fetchAllDevices();
+    fetchAllSequences();
+  }, []);
 
   // Mode States
   const [modeModal, setModeModal] = useState(false);
@@ -166,6 +171,7 @@ function App() {
               key={key} // use device key as the key for React
               className={key} // You can use the key for className or any other prop
               deviceName={key} // Pass the key as deviceName
+              initialSequence={sequenceList[key]}
             />
           ))
         ) : (
