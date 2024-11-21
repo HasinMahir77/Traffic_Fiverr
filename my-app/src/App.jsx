@@ -10,6 +10,21 @@ import Dropdown from "react-bootstrap/Dropdown";
 import DropdownButton from "react-bootstrap/DropdownButton";
 
 function App() {
+  const [deviceList, setDeviceList] = useState({});
+  const fetchAllDevices = async () => {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/getDevice/`);
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json(); // Await the JSON data
+      console.log(data); // Log the data
+      setDeviceList(data); // Update the state with the fetched data
+    } catch (err) {
+      console.log(err.message); // Log the error message
+    }
+  };
   //Mode States
   const [modeModal, setModeModal] = useState(false);
 
