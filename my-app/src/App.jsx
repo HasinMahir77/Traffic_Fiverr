@@ -10,6 +10,7 @@ import DropdownButton from "react-bootstrap/DropdownButton";
 
 function App() {
   const [deviceList, setDeviceList] = useState({});
+  const [sequenceList, setSequenceList] = useState({});
 
   const fetchAllDevices = async () => {
     try {
@@ -25,22 +26,45 @@ function App() {
       console.log(err.message); // Log the error message
     }
   };
+  const fetchAllSequences = async () => {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/getAllSequences/`);
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json(); // Await the JSON data
+      console.log(data); // Log the data
+      setSequenceList(data); // Update the state with the fetched data
+    } catch (err) {
+      console.log(err.message); // Log the error message
+    }
+  };
 
   useEffect(() => {
-    let interval;
-
+    let deviceInterval;
+    let sequenceInterval;
+    // Start fetching devices if deviceList is empty
     if (Object.keys(deviceList).length === 0) {
-      interval = setInterval(() => {
-        fetchAllDevices(); // Try fetching devices every 0.5 seconds
+      deviceInterval = setInterval(() => {
+        fetchAllDevices(); // Fetch devices
       }, 500);
     }
-    // Clear the interval if data is received or on component unmount
-    if (Object.keys(deviceList).length > 0) {
-      clearInterval(interval);
+    // Start fetching sequences if sequenceList is empty
+    if (Object.keys(sequenceList).length === 0) {
+      sequenceInterval = setInterval(() => {
+        fetchAllSequences(); // Fetch sequences
+      }, 500);
     }
-
-    return () => clearInterval(interval); // Cleanup interval on component unmount
-  }, [deviceList]); // Effect runs when deviceList changes
+    return () => {
+      if (Object.keys(deviceList).length > 0) {
+        clearInterval(deviceInterval);
+      }
+      if (Object.keys(sequenceList).length > 0) {
+        clearInterval(sequenceInterval);
+      }
+    };
+  }, []);
 
   // Mode States
   const [modeModal, setModeModal] = useState(false);
@@ -166,6 +190,7 @@ function App() {
               key={key} // use device key as the key for React
               className={key} // You can use the key for className or any other prop
               deviceName={key} // Pass the key as deviceName
+              currentSequence={key}
             />
           ))
         ) : (

@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./TrafficLight.css";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { InputGroup, Form } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-const TrafficLight = ({ deviceName }) => {
+const TrafficLight = ({ deviceName, currentSequence }) => {
   function capitalizeFirstLetter(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
@@ -25,7 +25,7 @@ const TrafficLight = ({ deviceName }) => {
     setShowModal(false);
   };
 
-  // Sequence selections
+  // New Sequence selections
   const [sequence, setSequence] = useState([]); // RGY
   const [sequenceTime, setSequenceTime] = useState([]); // Times for RGY
 
