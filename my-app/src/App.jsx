@@ -159,12 +159,19 @@ function App() {
           <span className="modeLabel">{mode} mode</span>
         </div>
 
-        <TrafficLight className="M" device="0" />
-        <TrafficLight className="1" device="1" />
-        <TrafficLight className="2" device="2" />
-        <TrafficLight className="3" device="3" />
-        <TrafficLight className="4" device="4" />
-        <TrafficLight className="5" device="5" />
+        {/* Dynamically render TrafficLights */}
+        {Object.keys(deviceList).length > 0 ? (
+          Object.keys(deviceList).map((key) => (
+            <TrafficLight
+              key={key} // use device key as the key for React
+              className={key} // You can use the key for className or any other prop
+              deviceName={key} // Pass the key as deviceName
+            />
+          ))
+        ) : (
+          <p>No devices available</p> // Show a message if no devices exist
+        )}
+
         <div className="footer">
           <Button variant="secondary" onClick={openModeModal}>
             Select Mode
