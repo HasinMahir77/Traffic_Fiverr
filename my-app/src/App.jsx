@@ -3,7 +3,7 @@ import "./App.css";
 import Modal from "react-bootstrap/Modal";
 import "bootstrap/dist/css/bootstrap.min.css";
 import TrafficLight from "./components/TrafficLight";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import { InputGroup, Form } from "react-bootstrap";
 import Dropdown from "react-bootstrap/Dropdown";
@@ -11,6 +11,7 @@ import DropdownButton from "react-bootstrap/DropdownButton";
 
 function App() {
   const [deviceList, setDeviceList] = useState({});
+
   const fetchAllDevices = async () => {
     try {
       const response = await fetch(`http://127.0.0.1:5000/getAllDevices/`);
@@ -25,8 +26,26 @@ function App() {
       console.log(err.message); // Log the error message
     }
   };
-  fetchAllDevices();
-  //Mode States
+
+  useEffect(() => {
+    let interval;
+
+    if (Object.keys(deviceList).length === 0) {
+      // Only start the interval if deviceList is empty
+      interval = setInterval(() => {
+        fetchAllDevices(); // Try fetching devices every 0.5 seconds
+      }, 500);
+    }
+
+    // Clear the interval if data is received or on component unmount
+    if (Object.keys(deviceList).length > 0) {
+      clearInterval(interval);
+    }
+
+    return () => clearInterval(interval); // Cleanup interval on component unmount
+  }, [deviceList]); // Effect runs when deviceList changes
+
+  // Mode States
   const [modeModal, setModeModal] = useState(false);
 
   const openModeModal = () => {
@@ -40,7 +59,8 @@ function App() {
     setMode(newMode);
     closeModeModal();
   };
-  //Add Device States
+
+  // Add Device States
   const [addModal, setAddModal] = useState(false);
   const openAddModal = () => {
     setAddModal(true);
@@ -48,23 +68,14 @@ function App() {
   const closeAddModal = () => {
     setAddModal(false);
   };
-  const handleAddDevice = (newMode) => {
-    //Code to add device
-    closeModeModal();
-  };
 
-  //Close Device States
+  // Close Device States
   const [closeModal, setCloseModal] = useState(false);
   const openCloseModal = () => {
     setCloseModal(true);
   };
   const closeCloseModal = () => {
     setCloseModal(false);
-  };
-
-  const handleDeleteDevice = (deviceId) => {
-    //Code to delete device
-    closeCloseModal();
   };
 
   return (
@@ -148,9 +159,16 @@ function App() {
             />
           </InputGroup>
           <DropdownButton id="dropdown-basic-button" title="Select Device">
-            <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-            <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-            <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
+            {Object.keys(deviceList).length > 0 ? (
+              Object.keys(deviceList).map((deviceId) => (
+                <Dropdown.Item key={deviceId} href={`#${deviceId}`}>
+                  {deviceList[deviceId].name}{" "}
+                  {/* Assuming each device has a 'name' property */}
+                </Dropdown.Item>
+              ))
+            ) : (
+              <Dropdown.Item disabled>No devices available</Dropdown.Item>
+            )}
           </DropdownButton>
         </Modal.Body>
         <Modal.Footer>
