@@ -56,6 +56,27 @@ def addDevice(deviceId): #Have to add default sequence as well!
         return jsonify({"error": "Error decoding the device list file"}), 500
     except Exception as e:
         return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+
+@app.route('/removeDevice/<deviceId>', methods=['POST'])
+def removeDevice(deviceId):
+    try:
+        with open(deviceListPath, 'r') as file:
+            device_list = json.load(file)
+        if deviceId not in device_list:
+            return jsonify({"error": "Device doesn't exist"}), 400
+        del device_list[deviceId]
+        with open(deviceListPath, 'w') as file:
+            json.dump(device_list, file, indent=4)
+
+        return jsonify({"message": f"Device {deviceId} removed successfully"}), 200
+
+    except FileNotFoundError:
+        return jsonify({"error": "Device list file not found"}), 500
+    except json.JSONDecodeError:
+        return jsonify({"error": "Error decoding the device list file"}), 500
+    except Exception as e:
+        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+
     
 @app.route('/changeSequence/<deviceId>', methods=['POST'])
 def changeSequence(deviceId):
