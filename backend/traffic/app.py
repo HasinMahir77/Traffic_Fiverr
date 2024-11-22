@@ -59,12 +59,26 @@ def addDevice(deviceId): #Have to add default sequence as well!
 
         with open(deviceListPath, 'w') as file:
             json.dump(device_list, file, indent=4)
+        #Add default sequence now    
+        with open(sequenceListPath, 'r') as file:
+            sequence_list = json.load(file)
+            
+        new_sequence = request.get_json()
+        sequence_list[deviceId] = {
+    "0": { "color": "green", "time": 40 },
+    "1": { "color": "yellow", "time": 5 },
+    "2": { "color": "red", "time": 40 }
+  }
+
+        with open(sequenceListPath, 'w') as file:
+            json.dump(sequence_list, file, indent=4)        
+        
         return jsonify({"message": "Device added successfully"}), 201
 
     except FileNotFoundError:
-        return jsonify({"error": "Device list file not found"}), 500
+        return jsonify({"error": "Device/Sequence list file not found"}), 500
     except json.JSONDecodeError:
-        return jsonify({"error": "Error decoding the device list file"}), 500
+        return jsonify({"error": "Error decoding the device/Sequence list file"}), 500
     except Exception as e:
         return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 
@@ -109,7 +123,6 @@ def changeSequence(deviceId):
     except Exception as e:
         return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 if __name__ == '__main__':
-    app.run(debug=True)
-
+    app.run(debug=True, host='0.0.0.0')
 
 
