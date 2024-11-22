@@ -2,6 +2,12 @@
 .parentContainer {
   display: flex;
   align-items: center; /* Align the items horizontally */
+  flex-direction: column;
+  gap: 2px;
+}
+.childContainer {
+  display: flex;
+  align-items: center; /* Align the items horizontally */
   gap: 10px; /* Reduced gap between elements */
   width: 90vw; /* Make sure it takes up 90% of the viewport width */
   height: 12vh;
@@ -10,7 +16,7 @@
   flex-wrap: nowrap; /* Ensure items don't stack vertically */
   padding: 10px; /* Add padding to avoid content touching screen edges */
 }
-.modalBody{
+.modalBody {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -41,11 +47,11 @@
 /* Timer container styling */
 .timer {
   font-size: 24px; /* Adjusted font size for mobile */
-  color: #FFFFFF; 
-  font-family: 'Digital-7', 'Courier New', Courier, monospace; 
-  background-color: #222; 
+  color: #ffffff;
+  font-family: "Digital-7", "Courier New", Courier, monospace;
+  background-color: #222;
   padding: 2px 4px; /* Reduced padding for mobile */
-  border-radius: 8px; 
+  border-radius: 8px;
   text-align: center;
   width: auto; /* Allow width to be dynamic */
   min-width: 80px; /* Set a minimum width */
@@ -54,7 +60,7 @@
 
 .timer-label {
   font-size: 14px; /* Smaller font size for the label */
-  color: #AAAAAA;
+  color: #aaaaaa;
   margin-bottom: 5px;
 }
 
@@ -69,9 +75,9 @@
   align-items: center;
   gap: 10px; /* Reduced gap between traffic lights */
   padding: 15px; /* Reduced padding */
-  border-radius: 15px; 
+  border-radius: 15px;
   background-color: darkslategray;
-  border: 2px solid rgb(37, 37, 37); 
+  border: 2px solid rgb(37, 37, 37);
   width: 100%; /* Make it full width within parent container */
 }
 
@@ -94,7 +100,7 @@
 }
 
 .yellow {
-  background-color: #FF8C00;
+  background-color: #ff8c00;
 }
 
 .green {
@@ -107,9 +113,9 @@
 }
 
 .yellow.active {
-  background-color: #FFBF00;
+  background-color: #ffbf00;
   color: black;
-  box-shadow: 0 0 40px 10px #FFBF00;
+  box-shadow: 0 0 40px 10px #ffbf00;
 }
 
 .green.active {

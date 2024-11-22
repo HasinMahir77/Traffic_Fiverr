@@ -89,113 +89,115 @@ const TrafficLight = ({ serverIp, deviceName, initialSequence }) => {
   return (
     <div className="parentContainer">
       <span className="label">{deviceName ? deviceName : ""}</span>
-      <div className="traffic-light-bar">
-        <button
-          className={`traffic-light red ${
-            activeLight === "red" ? "active" : ""
-          }`}
-          onClick={() => handleClick("red")}
-        ></button>
-        <button
-          className={`traffic-light yellow ${
-            activeLight === "yellow" ? "active" : ""
-          }`}
-          onClick={() => handleClick("yellow")}
-        ></button>
-        <button
-          className={`traffic-light green ${
-            activeLight === "green" ? "active" : ""
-          }`}
-          onClick={() => handleClick("green")}
-        ></button>
+      <div className="childContainer">
+        <div className="traffic-light-bar">
+          <button
+            className={`traffic-light red ${
+              activeLight === "red" ? "active" : ""
+            }`}
+            onClick={() => handleClick("red")}
+          ></button>
+          <button
+            className={`traffic-light yellow ${
+              activeLight === "yellow" ? "active" : ""
+            }`}
+            onClick={() => handleClick("yellow")}
+          ></button>
+          <button
+            className={`traffic-light green ${
+              activeLight === "green" ? "active" : ""
+            }`}
+            onClick={() => handleClick("green")}
+          ></button>
+        </div>
+
+        <div className="timer">
+          <div className="timer-value">{time}</div>
+          <Button
+            className="sequenceButton"
+            variant="warning"
+            onClick={openModal}
+          >
+            Sequence
+          </Button>
+        </div>
+
+        {/* Mode selection popup */}
+        <Modal keyboard={false} show={showModal} onHide={closeModal} centered>
+          <Modal.Header className="bg-dark text-light">
+            <Modal.Title>Select Sequence</Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="modalBody bg-dark text-light">
+            <div className="sequenceButtonDiv">
+              {sequence.includes("red") ? (
+                <></>
+              ) : (
+                <Button
+                  variant="danger"
+                  className="RButton"
+                  onClick={() => handleAddColor("red")}
+                >
+                  Red
+                </Button>
+              )}
+              {sequence.includes("green") ? (
+                <></>
+              ) : (
+                <Button
+                  variant="success"
+                  className="GSButton"
+                  onClick={() => handleAddColor("green")}
+                >
+                  Green
+                </Button>
+              )}
+              {sequence.includes("yellow") ? (
+                <></>
+              ) : (
+                <Button
+                  variant="warning"
+                  className="YButton"
+                  onClick={() => handleAddColor("yellow")}
+                >
+                  Yellow
+                </Button>
+              )}
+              <Button variant="secondary" onClick={cancelSequenceSelection}>
+                Cancel
+              </Button>
+            </div>
+
+            <div className="selectionDisplay">
+              {sequence.map((color, index) => (
+                <InputGroup size="sm" className="mb-3" key={index}>
+                  <InputGroup.Text id="inputGroup-sizing-sm">
+                    {capitalizeFirstLetter(color)}
+                  </InputGroup.Text>
+                  <Form.Control
+                    type="number"
+                    value={sequenceTime[index] || ""}
+                    onChange={(e) => handleTimeChange(index, e.target.value)}
+                    aria-label="Small"
+                    aria-describedby="inputGroup-sizing-sm"
+                    placeholder="Time in seconds"
+                    min="0"
+                    step="1"
+                  />
+                </InputGroup>
+              ))}
+              {sequence.length === 3 && sequenceTime.length === 3 && (
+                <Button
+                  variant="success"
+                  className="GSButton"
+                  onClick={() => setNewSequence()}
+                >
+                  Set Sequence
+                </Button>
+              )}
+            </div>
+          </Modal.Body>
+        </Modal>
       </div>
-
-      <div className="timer">
-        <div className="timer-value">{time}</div>
-        <Button
-          className="sequenceButton"
-          variant="warning"
-          onClick={openModal}
-        >
-          Sequence
-        </Button>
-      </div>
-
-      {/* Mode selection popup */}
-      <Modal keyboard={false} show={showModal} onHide={closeModal} centered>
-        <Modal.Header className="bg-dark text-light">
-          <Modal.Title>Select Sequence</Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="modalBody bg-dark text-light">
-          <div className="sequenceButtonDiv">
-            {sequence.includes("red") ? (
-              <></>
-            ) : (
-              <Button
-                variant="danger"
-                className="RButton"
-                onClick={() => handleAddColor("red")}
-              >
-                Red
-              </Button>
-            )}
-            {sequence.includes("green") ? (
-              <></>
-            ) : (
-              <Button
-                variant="success"
-                className="GSButton"
-                onClick={() => handleAddColor("green")}
-              >
-                Green
-              </Button>
-            )}
-            {sequence.includes("yellow") ? (
-              <></>
-            ) : (
-              <Button
-                variant="warning"
-                className="YButton"
-                onClick={() => handleAddColor("yellow")}
-              >
-                Yellow
-              </Button>
-            )}
-            <Button variant="secondary" onClick={cancelSequenceSelection}>
-              Cancel
-            </Button>
-          </div>
-
-          <div className="selectionDisplay">
-            {sequence.map((color, index) => (
-              <InputGroup size="sm" className="mb-3" key={index}>
-                <InputGroup.Text id="inputGroup-sizing-sm">
-                  {capitalizeFirstLetter(color)}
-                </InputGroup.Text>
-                <Form.Control
-                  type="number"
-                  value={sequenceTime[index] || ""}
-                  onChange={(e) => handleTimeChange(index, e.target.value)}
-                  aria-label="Small"
-                  aria-describedby="inputGroup-sizing-sm"
-                  placeholder="Time in seconds"
-                  min="0"
-                  step="1"
-                />
-              </InputGroup>
-            ))}
-            {sequence.length === 3 && sequenceTime.length === 3 && (
-              <Button
-                variant="success"
-                className="GSButton"
-                onClick={() => setNewSequence()}
-              >
-                Set Sequence
-              </Button>
-            )}
-          </div>
-        </Modal.Body>
-      </Modal>
     </div>
   );
 };

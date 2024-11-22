@@ -1,0 +1,11 @@
+{
+  "appId": "com.tl.alpha",
+  "appName": "Traffic Lights Alpha",
+  "webDir": "build",
+  "server": {
+    "allowMixedContent": true
+  },
+  "android": {
+    "allowMixedContent": true
+  }
+}
