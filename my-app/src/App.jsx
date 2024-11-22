@@ -9,13 +9,12 @@ import Dropdown from "react-bootstrap/Dropdown";
 import DropdownButton from "react-bootstrap/DropdownButton";
 
 function App() {
-  const serverIp = `http://192.168.0.187:5000`;
   const [deviceList, setDeviceList] = useState({});
   const [sequenceList, setSequenceList] = useState({});
 
   const fetchAllDevices = async () => {
     try {
-      const response = await fetch(serverIp + `/getAllDevices/`);
+      const response = await fetch(`http://127.0.0.1:5000/getAllDevices/`);
       if (!response.ok) {
         throw new Error(`Error: ${response.status} ${response.statusText}`);
       }
@@ -30,7 +29,7 @@ function App() {
 
   const fetchAllSequences = async () => {
     try {
-      const response = await fetch(serverIp + `/getAllSequences/`);
+      const response = await fetch(`http://127.0.0.1:5000/getAllSequences/`);
       if (!response.ok) {
         throw new Error(`Error: ${response.status} ${response.statusText}`);
       }
@@ -75,17 +74,20 @@ function App() {
   };
   const addDevice = async () => {
     try {
-      const response = await fetch(serverIp + `/addDevice/${newDeviceName}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          type: "slave",
-          ip: newDeviceIp,
-          status: 1,
-        }), // Send device data as JSON
-      });
+      const response = await fetch(
+        `http://127.0.0.1:5000/addDevice/${newDeviceName}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            type: "slave",
+            ip: newDeviceIp,
+            status: 1,
+          }), // Send device data as JSON
+        }
+      );
 
       const result = await response.json();
       fetchAllDevices();
@@ -125,7 +127,7 @@ function App() {
   const removeDevice = async () => {
     try {
       const response = await fetch(
-        serverIp + `/removeDevice/${removeDeviceKey}`,
+        `http://127.0.0.1:5000/removeDevice/${removeDeviceKey}`,
         {
           method: "POST",
           headers: {
@@ -170,7 +172,6 @@ function App() {
               className={key} // You can use the key for className or any other prop
               deviceName={key} // Pass the key as deviceName
               initialSequence={sequenceList[key]}
-              serverIp={serverIp}
             />
           ))
         ) : (
