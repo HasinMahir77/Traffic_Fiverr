@@ -11,7 +11,7 @@ import DropdownButton from "react-bootstrap/DropdownButton";
 function App() {
   const [deviceList, setDeviceList] = useState({});
   const [sequenceList, setSequenceList] = useState({});
-  const serverIp = "http://127.0.0.1:5000/";
+  const serverIp = "http://127.0.0.1:5000";
 
   const fetchAllDevices = async () => {
     try {
