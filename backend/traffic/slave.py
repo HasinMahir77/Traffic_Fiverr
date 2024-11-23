@@ -1,16 +1,17 @@
-#from flask import Flask, request, jsonify
-#from flask_cors import CORS
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 import json
 import requests
 import serial
 import socket
 import time
+import threading
 
 serverIp = "http://192.168.0.236:5000"
-arduino = serial.Serial(port='COM6', baudrate=9600, timeout=0.1)  
+arduino = serial.Serial(port='COM6', baudrate=9600, timeout=0.1)
 
-#app = Flask(__name__)
-#CORS(app)
+app = Flask(__name__)
+CORS(app)
 
 def serialWrite(data):
     arduino.write(f"{data}\n".encode())  
@@ -51,6 +52,7 @@ def get_device(device_id):
     except requests.exceptions.RequestException as e:
         print(f"Error fetching device {url}: {e}")
         return None
+
 def get_sequence(device_id):
     url = f"{serverIp}/getSequence/{device_id}"
     try:
@@ -60,6 +62,7 @@ def get_sequence(device_id):
     except requests.exceptions.RequestException as e:
         print(f"Error fetching device {url}: {e}")
         return None
+
 def get_public_ip():
     try:
         response = requests.get("https://api.ipify.org?format=json")
@@ -82,26 +85,20 @@ def run_sequence(sequence):
             color = item["color"]
             duration = item["time"]
             
-            # Record the start time when we send the color
             start_time = time.time()
-            
-            # Send the color once
             serialWrite(color)
             print(f"Sent {color} for {duration} seconds")
             
-            # Continue checking elapsed time without blocking
             while True:
-                # Calculate elapsed time
                 elapsed_time = time.time() - start_time
                 if elapsed_time >= duration:
-                    break  # Exit the loop after the required duration has passed
-                # You can add any other non-blocking tasks you want to perform here
-                # (e.g., check serial data, handle other logic, etc.)
-# @app.route('/get_current_color', methods=['POST'])
-# def get_current_color():
-#     global last_send_time, color
-#     timeLeft = time.time()-last_send_time
-#     return jsonify({"color": color, "timeLeft": timeLeft})
+                    break
+
+@app.route('/get_current_color', methods=['POST'])
+def get_current_color():
+    global last_send_time, color
+    timeLeft = time.time() - last_send_time
+    return jsonify({"color": color, "timeLeft": timeLeft})
 
 start_time = 0
 elapsed_time = 0
@@ -109,11 +106,18 @@ last_send_time = 0
 deviceName = None
 sequenceList = None
 sequence = None
-deviceIp = get_local_ip()  # Get the local IP address
-deviceList = get_all_devices()  # Fetch the device list
+deviceIp = get_local_ip()  
+deviceList = get_all_devices()  
+
+def run_flask():
+    app.run(threaded=True, host='0.0.0.0')
 
 if __name__ == "__main__":
-    #app.run(debug=True, threaded=True, host='0.0.0.0')
+    # Start Flask server in a separate thread
+    flask_thread = threading.Thread(target=run_flask)
+    flask_thread.daemon = True
+    flask_thread.start()
+
     # Get deviceName and sequence based on IP
     sequenceList = get_all_sequences()
     for i in deviceList:
@@ -122,42 +126,38 @@ if __name__ == "__main__":
             sequence = sequenceList[deviceName]
             print(f"Device Name: {deviceName}")
             print(f"Sequence: {sequence}")
-            break  # Exit loop once device is found
+            break
     if not deviceName:
         print("Device not found!")
 
     current_index = 0
-    last_send_time = time.time()  # Track time when the color was last sent
+    last_send_time = time.time()
     color = sequence[str(current_index)]["color"]
     duration = sequence[str(current_index)]["time"]
     print(f"Sending {color} for {duration} seconds...")
 
-    serialWrite(color)  # Send the first color immediately
+    serialWrite(color)
 
-    # Main loop
     try:
-        
         while True:
             current_time = time.time()
             elapsed_time = current_time - last_send_time
 
-            #Check is sequence has changed
             sequenceList = get_all_sequences()
             newSequence = sequenceList[deviceName]
-            if (sequence!=newSequence):
+            if sequence != newSequence:
                 sequence = newSequence
                 current_index = 0
                 print("New Sequence detected. Flashing yellow for 5s")
 
                 flashStartTime = time.time()
-                while (time.time()-flashStartTime<5):
+                while time.time() - flashStartTime < 5:
                     serialWrite("yellow")
                 print("Yellow flash stopped")
 
-            # Check if it's time to send the next color
             if elapsed_time >= duration:
                 current_index += 1
-                if current_index > 2:  # Reset to 0 after the last color
+                if current_index > 2:
                     current_index = 0
                 color = sequence[str(current_index)]["color"]
                 duration = sequence[str(current_index)]["time"]
@@ -167,16 +167,14 @@ if __name__ == "__main__":
 
                 last_send_time = current_time
 
-            # Read data from Arduino if available
             data = serialRead()
-            # if data:
-            #     print(f"Received: {data}")
+            if data:
+                print(f"Received: {data}")
     except serial.SerialException as e:
         print(f"Serial Error: {e}")
     except KeyboardInterrupt:
         print("\nKeyboard Interrupt: Exiting...")
     finally:
-        # Ensure the serial connection is closed
         if arduino and arduino.is_open:
             arduino.close()
             print("Serial connection closed.")
