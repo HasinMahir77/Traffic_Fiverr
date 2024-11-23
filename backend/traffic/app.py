@@ -64,11 +64,7 @@ def addDevice(deviceId): #Have to add default sequence as well!
             sequence_list = json.load(file)
             
         new_sequence = request.get_json()
-        sequence_list[deviceId] = {
-    "0": { "color": "green", "time": 40 },
-    "1": { "color": "yellow", "time": 5 },
-    "2": { "color": "red", "time": 40 }
-  }
+        sequence_list[deviceId] = new_sequence
 
         with open(sequenceListPath, 'w') as file:
             json.dump(sequence_list, file, indent=4)        
