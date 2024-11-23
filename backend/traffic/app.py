@@ -88,26 +88,6 @@ def removeDevice(deviceId):
     except Exception as e:
         return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 
-    
-@app.route('/changeSequence/<deviceId>', methods=['POST'])
-def changeSequence(deviceId):
-    try:
-        with open(sequenceListPath, 'r') as file:
-            sequence_list = json.load(file)
-            
-        new_sequence = request.get_json()
-        sequence_list[deviceId] = new_sequence
-
-        with open(sequenceListPath, 'w') as file:
-            json.dump(sequence_list, file, indent=4)
-        return jsonify({"message": "Sequence added successfully"}), 201
-
-    except FileNotFoundError:
-        return jsonify({"error": "Sequence list file not found"}), 500
-    except json.JSONDecodeError:
-        return jsonify({"error": "Error decoding the sequence list file"}), 500
-    except Exception as e:
-        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 if __name__ == '__main__':
     app.run(debug=True)
 
