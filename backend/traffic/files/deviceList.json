@@ -1,5 +1,4 @@
 {
-<<<<<<< Updated upstream
   "Device1": {
     "type": "master",
     "name": "Device 1",
@@ -15,18 +14,3 @@
     "status": 0
   }
 }
-=======
-    "Device1": {
-        "type": "master",
-        "name": "Device 1",
-        "ip": "192.168.1.10",
-        "mac": "00:1A:2B:3C:4D:5E",
-        "status": 1
-    },
-    "Device2": {
-        "type": "slave",
-        "ip": "192.168.0.187",
-        "status": 1
-    }
-}
->>>>>>> Stashed changes

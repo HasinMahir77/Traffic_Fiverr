@@ -34,18 +34,6 @@ def getAllSequences():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-@app.route('/getDevice/<deviceId>', methods=['GET'])
-def getDevice(deviceId):
-    print(f"Received request for device: {deviceId}")
-    try:
-        with open(deviceListPath, 'r') as file:
-            device = json.load(file).get(deviceId, None)
-            if device is None:
-                return jsonify({"error": "Device not found"}), 404
-        return jsonify(device)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-    
 @app.route('/getSequence/<deviceId>', methods=['GET'])
 def getDevice(deviceId):
     print(f"Received request for sequence: {deviceId}")
