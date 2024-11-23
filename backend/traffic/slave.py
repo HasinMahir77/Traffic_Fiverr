@@ -65,12 +65,19 @@ def get_local_ip():
   
 if __name__ == "__main__":
     deviceName = 0
+    sequence = 0
     deviceIp = get_local_ip()
     deviceList = get_all_devices()
+    sequenceList = get_all_sequences()
     
+    #Get deviceName
     for i in deviceList:
         if deviceList[i]["ip"]==deviceIp:
             deviceName = i
+            sequence = sequenceList[deviceName]
             print(deviceName)
+            print(sequence)
+    
+    
     
     
