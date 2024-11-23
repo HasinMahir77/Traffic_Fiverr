@@ -181,7 +181,6 @@ function App() {
           <Button variant="secondary" onClick={openModeModal}>
             Select Mode
           </Button>
-          <Button variant="primary">Save</Button>
         </div>
       </div>
 
