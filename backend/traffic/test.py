@@ -1,11 +1,11 @@
-import json
-
-# Path to the JSON file
-deviceListPath = r'E:\Projects\Traffic_Fiverr\backend\traffic\files\deviceList.json'
-
-# Open and read the JSON file
-with open(deviceListPath, 'r') as file:
-    device = json.load(file)['device1']
-# Print the parsed JSON data
-print(device)
-
+import socket
+def get_local_ip():
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+            s.connect(("8.8.8.8", 80))  
+            local_ip = s.getsockname()[0]  
+        return local_ip
+    except Exception as e:
+        return f"Error: {e}"
+    
+print(get_local_ip())
