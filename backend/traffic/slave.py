@@ -6,11 +6,18 @@ import time
 import math
 
 serverIp = "http://192.168.0.187:5000"
-try:
-    arduino = serial.Serial(port='COM6', baudrate=9600, timeout=0.1)
-except serial.SerialException as e:
-    print(f"Error initializing serial connection: {e}")
-    arduino = None  # Set to None if initialization fails
+arduino = None  # Initialize arduino to None first
+
+# Function to attempt reconnecting to the serial port
+def reconnect_serial():
+    global arduino
+    try:
+        if arduino is None or not arduino.is_open:
+            print("Attempting to reconnect to serial port...")
+            arduino = serial.Serial(port='COM6', baudrate=9600, timeout=0.1)
+            print("Successfully reconnected to serial.")
+    except serial.SerialException as e:
+        print(f"Error reconnecting to serial: {e}")
 
 
 def serialWrite(data):
@@ -20,6 +27,7 @@ def serialWrite(data):
             time.sleep(0.1)
     except serial.SerialException as e:
         print(f"Error writing to serial: {e}")
+        reconnect_serial()  # Try to reconnect if the serial is unavailable
 
 
 def serialRead():
@@ -29,6 +37,7 @@ def serialRead():
             return data
     except serial.SerialException as e:
         print(f"Error reading from serial: {e}")
+        reconnect_serial()  # Try to reconnect if the serial is unavailable
     return None
 
 
@@ -131,12 +140,13 @@ if __name__ == "__main__":
         color = sequence[str(current_index)]["color"]
         duration = sequence[str(current_index)]["time"]
         print(f"Sending {color} for {duration} seconds...")
-        serialWrite(color)
+        if arduino:  # Only attempt serialWrite if arduino is initialized
+            serialWrite(color)
 
         # Main loop
         while True:
             device = get_device(deviceName)
-            #Heartbeat
+            # Heartbeat
             try:
                 requests.post(
                     f"{serverIp}/setLastReply/{deviceName}",
@@ -145,8 +155,6 @@ if __name__ == "__main__":
                 )
             except requests.exceptions.RequestException as e:
                 print(f"Heartbeat error: {e}")
-
-            
 
             # Auto Mode
             if device["mode"] == "auto":
@@ -163,13 +171,14 @@ if __name__ == "__main__":
                 except requests.exceptions.RequestException as e:
                     print(f"Error posting state: {e}")
 
-                # Read data from Arduino if available
-                data = serialRead()
-                if data == "green":
-                    for i, seq in sequence.items():
-                        if seq["color"] == "green":
-                            current_index = int(i)
-                            break
+                # Read data from Arduino if available and arduino is connected
+                if arduino:
+                    data = serialRead()
+                    if data == "green":
+                        for i, seq in sequence.items():
+                            if seq["color"] == "green":
+                                current_index = int(i)
+                                break
 
                 # Check if sequence has changed
                 sequenceList = get_all_sequences()
@@ -181,7 +190,8 @@ if __name__ == "__main__":
 
                     flashStartTime = time.time()
                     while time.time() - flashStartTime < 5:
-                        serialWrite("yellow")
+                        if arduino:
+                            serialWrite("yellow")
                     print("Yellow flash stopped")
 
                 # Check if it's time to send the next color
@@ -191,8 +201,14 @@ if __name__ == "__main__":
                     duration = sequence[str(current_index)]["time"]
 
                     print(f"Sending {color} for {duration} seconds...")
-                    serialWrite(color)
+                    if arduino:  # Only attempt serialWrite if arduino is initialized
+                        serialWrite(color)
                     last_send_time = current_time
+
+                # Try reconnecting periodically if serial is unavailable
+                if arduino is None or not arduino.is_open:
+                    reconnect_serial()
+                    time.sleep(5)  # Retry every 5 seconds
 
     except KeyboardInterrupt:
         print("\nKeyboard Interrupt: Exiting...")

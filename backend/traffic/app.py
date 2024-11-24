@@ -2,84 +2,120 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import json
 import time
+import threading
 
 app = Flask(__name__)
 CORS(app)
 
-#Paths 
+# Paths
 deviceListPath = r'backend/traffic/files/deviceList.json'
 sequenceListPath = r'backend/traffic/files/sequenceList.json'
 
-#GET Methods here
+
+# Function to periodically check device statuses
+def monitor_device_status():
+    while True:
+        try:
+            with open(deviceListPath, 'r') as file:
+                device_list = json.load(file)
+
+            current_time = time.time()
+            for device_id, device in device_list.items():
+                last_reply = device.get("lastReply", 0)
+                if current_time - last_reply > 2:  # Check if more than 2 seconds
+                    device["status"] = 0  # Set status to 0
+
+            with open(deviceListPath, 'w') as file:
+                json.dump(device_list, file, indent=4)
+
+        except Exception as e:
+            print(f"Error monitoring device statuses: {e}")
+
+        time.sleep(2)  # Check every 2 seconds
+
+
+# Start the monitoring function in a separate thread
+threading.Thread(target=monitor_device_status, daemon=True).start()
+
+
+# GET Methods
 @app.route('/getAllDevices/', methods=['GET'])
 def getAllDevices():
-    print(f"Received request for all devices")
     try:
         with open(deviceListPath, 'r') as file:
             deviceList = json.load(file)
-            if deviceList is None:
-                return jsonify({"error": "Device not found"}), 404
         return jsonify(deviceList)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
 @app.route('/getAllSequences/', methods=['GET'])
 def getAllSequences():
-    print(f"Received request for all sequences")
     try:
         with open(sequenceListPath, 'r') as file:
             sequence = json.load(file)
-            if sequence is None:
-                return jsonify({"error": "Sequence List not found"}), 404
         return jsonify(sequence)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
+
+
 @app.route('/getDevice/<deviceId>', methods=['GET'])
 def getDevice(deviceId):
-    print(f"Received request for device: {deviceId}")
     try:
         with open(deviceListPath, 'r') as file:
-            device = json.load(file).get(deviceId, None)
-            if device is None:
-                return jsonify({"error": "Device not found"}), 404
+            device = json.load(file).get(deviceId)
+        if not device:
+            return jsonify({"error": "Device not found"}), 404
         return jsonify(device)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
+
 
 @app.route('/getSequence/<deviceId>', methods=['GET'])
 def getSequence(deviceId):
-    print(f"Received request for device: {deviceId}")
     try:
         with open(sequenceListPath, 'r') as file:
-            sequence = json.load(file).get(deviceId, None)
-            if sequence is None:
-                return jsonify({"error": "Device not found"}), 404
+            sequence = json.load(file).get(deviceId)
+        if not sequence:
+            return jsonify({"error": "Sequence not found"}), 404
         return jsonify(sequence)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
 @app.route('/getStatus/<deviceId>', methods=['GET'])
 def getStatus(deviceId):
-    print(f"Received request for device: {deviceId}")
     try:
         with open(deviceListPath, 'r') as file:
-            sequence = json.load(file).get(deviceId, None)
-            if sequence is None:
-                return jsonify({"error": "Device not found"}), 404
-        return jsonify(deviceListPath[deviceId]["status"])
+            deviceList = json.load(file)
+
+        device = deviceList.get(deviceId)
+        if not device:
+            return jsonify({"error": "Device not found"}), 404
+
+        print(f"Device Status for {deviceId}: {device['status']}")  # Debug log
+        response = {
+            "mode": device["mode"],
+            "color": device.get("color"),
+            "timeLeft": device.get("timeLeft"),
+            "manualColor": device.get("manualColor"),
+            "status": device.get("status", 0),
+        }
+        return jsonify(response)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 
-#POST Methods here
-@app.route('/addDevice/<deviceId>', methods=['POST']) 
-def addDevice(deviceId): #Have to add default sequence as well!
+
+# POST Methods
+@app.route('/addDevice/<deviceId>', methods=['POST'])
+def addDevice(deviceId):
     try:
         with open(deviceListPath, 'r') as file:
             device_list = json.load(file)
         if deviceId in device_list:
             return jsonify({"error": "Device ID already exists"}), 400
+
         new_device = request.get_json()
         new_device["color"] = "yellow"
         new_device["timeLeft"] = 0
@@ -89,20 +125,20 @@ def addDevice(deviceId): #Have to add default sequence as well!
 
         with open(deviceListPath, 'w') as file:
             json.dump(device_list, file, indent=4)
-        #Add default sequence now    
+
         with open(sequenceListPath, 'r') as file:
             sequence_list = json.load(file)
-            
+
         new_sequence = {
-    "0": { "color": "green", "time": 40 },
-    "1": { "color": "yellow", "time": 5 },
-    "2": { "color": "red", "time": 40 }
-  }
+            "0": {"color": "green", "time": 40},
+            "1": {"color": "yellow", "time": 5},
+            "2": {"color": "red", "time": 40},
+        }
         sequence_list[deviceId] = new_sequence
 
         with open(sequenceListPath, 'w') as file:
-            json.dump(sequence_list, file, indent=4)        
-        
+            json.dump(sequence_list, file, indent=4)
+
         return jsonify({"message": "Device added successfully"}), 201
 
     except FileNotFoundError:
@@ -112,6 +148,7 @@ def addDevice(deviceId): #Have to add default sequence as well!
     except Exception as e:
         return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 
+
 @app.route('/removeDevice/<deviceId>', methods=['POST'])
 def removeDevice(deviceId):
     try:
@@ -120,126 +157,123 @@ def removeDevice(deviceId):
         if deviceId not in device_list:
             return jsonify({"error": "Device doesn't exist"}), 400
         del device_list[deviceId]
+
         with open(deviceListPath, 'w') as file:
             json.dump(device_list, file, indent=4)
 
         return jsonify({"message": f"Device {deviceId} removed successfully"}), 200
 
-    except FileNotFoundError:
-        return jsonify({"error": "Device list file not found"}), 500
-    except json.JSONDecodeError:
-        return jsonify({"error": "Error decoding the device list file"}), 500
     except Exception as e:
-        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+        return jsonify({"error": str(e)}), 500
 
-    
+
 @app.route('/changeSequence/<deviceId>', methods=['POST'])
 def changeSequence(deviceId):
     try:
         with open(sequenceListPath, 'r') as file:
             sequence_list = json.load(file)
-            
+
         new_sequence = request.get_json()
         sequence_list[deviceId] = new_sequence
 
         with open(sequenceListPath, 'w') as file:
             json.dump(sequence_list, file, indent=4)
-        return jsonify({"message": "Sequence added successfully"}), 201
 
-    except FileNotFoundError:
-        return jsonify({"error": "Sequence list file not found"}), 500
-    except json.JSONDecodeError:
-        return jsonify({"error": "Error decoding the sequence list file"}), 500
+        return jsonify({"message": "Sequence updated successfully"}), 201
+
     except Exception as e:
-        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+        return jsonify({"error": str(e)}), 500
+
 
 @app.route('/setState/<deviceId>', methods=['POST'])
 def setState(deviceId):
     try:
         with open(deviceListPath, 'r') as file:
             device_list = json.load(file)
+
         if deviceId not in device_list:
             return jsonify({"error": "Device doesn't exist"}), 400
-        #Changes here
+
         newState = request.get_json()
         device_list[deviceId]["color"] = newState["color"]
         device_list[deviceId]["timeLeft"] = newState["timeLeft"]
+
         with open(deviceListPath, 'w') as file:
             json.dump(device_list, file, indent=4)
 
-    except FileNotFoundError:
-        return jsonify({"error": "Device list file not found"}), 500
-    except json.JSONDecodeError:
-        return jsonify({"error": "Error decoding the device list file"}), 500
+        return jsonify({"message": "State set successfully"}), 201
+
     except Exception as e:
-        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
-    
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route('/setManualColor/<deviceId>', methods=['POST'])
 def setManualColor(deviceId):
     try:
         with open(deviceListPath, 'r') as file:
             device_list = json.load(file)
+
         if deviceId not in device_list:
             return jsonify({"error": "Device doesn't exist"}), 400
-        #Changes here
+
         data = request.get_json()
         device_list[deviceId]["manualColor"] = data["manualColor"]
+
         with open(deviceListPath, 'w') as file:
             json.dump(device_list, file, indent=4)
 
-    except FileNotFoundError:
-        return jsonify({"error": "Device list file not found"}), 500
-    except json.JSONDecodeError:
-        return jsonify({"error": "Error decoding the device list file"}), 500
+        return jsonify({"message": "Manual color set"}), 201
+
     except Exception as e:
-        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+        return jsonify({"error": str(e)}), 500
+
 
 @app.route('/setMode/<deviceId>', methods=['POST'])
 def setMode(deviceId):
     try:
         with open(deviceListPath, 'r') as file:
             device_list = json.load(file)
+
         if deviceId not in device_list:
             return jsonify({"error": "Device doesn't exist"}), 400
-        #Changes here
+
         data = request.get_json()
         device_list[deviceId]["mode"] = data["mode"]
+
         with open(deviceListPath, 'w') as file:
             json.dump(device_list, file, indent=4)
 
-    except FileNotFoundError:
-        return jsonify({"error": "Device list file not found"}), 500
-    except json.JSONDecodeError:
-        return jsonify({"error": "Error decoding the device list file"}), 500
+        return jsonify({"message": "Mode set successfully"}), 201
+
     except Exception as e:
-        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+        return jsonify({"error": str(e)}), 500
+
 
 @app.route('/setLastReply/<deviceId>', methods=['POST'])
 def setLastReply(deviceId):
     try:
         with open(deviceListPath, 'r') as file:
             device_list = json.load(file)
+
         if deviceId not in device_list:
             return jsonify({"error": "Device doesn't exist"}), 400
-        #Changes here
+
         data = request.get_json()
-        if (data["connected"]==1):
-            device_list[deviceId]["lastReply"]==time.time() #Update last reply
-        if (time.time()-device_list[deviceId]["lastReply"] < 1): #Got last reply 1s ago
-            device_list[deviceId]["status"] = 1
-        else:
-            device_list[deviceId]["status"] = 0
+
+        if data.get("connected") == 1:
+            device_list[deviceId]["lastReply"] = time.time()
+            device_list[deviceId]["status"] = 1  # Set status to 1 when connected
+
         with open(deviceListPath, 'w') as file:
             json.dump(device_list, file, indent=4)
 
-    except FileNotFoundError:
-        return jsonify({"error": "Device list file not found"}), 500
-    except json.JSONDecodeError:
-        return jsonify({"error": "Error decoding the device list file"}), 500
+        print(f"Updated status for {deviceId}: {device_list[deviceId]['status']}")  # Debug log
+        return jsonify({"message": f"Got last reply from {deviceId}"}), 201
+
     except Exception as e:
-        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
-    
+        return jsonify({"error": str(e)}), 500
+
+
+
 if __name__ == '__main__':
-        app.run(debug=False, threaded=True, host='0.0.0.0')
-
-
+    app.run(debug=False, threaded=True, host='0.0.0.0')
