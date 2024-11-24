@@ -10,7 +10,6 @@ import DropdownButton from "react-bootstrap/DropdownButton";
 
 function App() {
   const [deviceList, setDeviceList] = useState({});
-  const [sequenceList, setSequenceList] = useState({});
   const serverIp = "http://192.168.0.187:5000";
 
   const fetchAllDevices = async () => {
@@ -28,24 +27,8 @@ function App() {
     }
   };
 
-  const fetchAllSequences = async () => {
-    try {
-      const response = await fetch(serverIp + `/getAllSequences/`);
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status} ${response.statusText}`);
-      }
-
-      const data = await response.json(); // Await the JSON data
-      console.log(data); // Log the data
-      setSequenceList(data); // Update the state with the fetched data
-    } catch (err) {
-      console.log(err.message); // Log the error message
-    }
-  };
-
   useEffect(() => {
     fetchAllDevices();
-    fetchAllSequences();
   }, []);
 
   // Mode States
@@ -269,15 +252,19 @@ function App() {
             title={removeDeviceKey === "" ? "Select Device" : removeDeviceKey}
           >
             {Object.keys(deviceList).length > 0 ? (
-              Object.keys(deviceList).map((key) => (
-                <Dropdown.Item
-                  key={key}
-                  as="button" // Turn this into a button to avoid refresh
-                  eventKey={key} // Pass the key as the eventKey
-                >
-                  {key}
-                </Dropdown.Item>
-              ))
+              Object.keys(deviceList).map((key) =>
+                key !== "Master" ? (
+                  <Dropdown.Item
+                    key={key}
+                    as="button" // Turn this into a button to avoid refresh
+                    eventKey={key} // Pass the key as the eventKey
+                  >
+                    {key}
+                  </Dropdown.Item>
+                ) : (
+                  <></>
+                )
+              )
             ) : (
               <Dropdown.Item disabled>No devices available</Dropdown.Item>
             )}
