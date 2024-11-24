@@ -141,7 +141,9 @@ if __name__ == "__main__":
         while True:
             current_time = time.time()
             elapsed_time = current_time - last_send_time
-            timeLeft = sequence[str(current_index)]["time"] - elapsed_time
+            timeLeft = int(sequence[str(current_index)]["time"] - elapsed_time)
+            if timeLeft<0:
+                timeLeft=0
             requests.post(serverIp + "/setState/" + deviceName, json={"color": color, "timeLeft": timeLeft}, timeout=1)
         
 
