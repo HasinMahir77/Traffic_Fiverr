@@ -146,8 +146,12 @@ if __name__ == "__main__":
 
             # Read data from Arduino if available
             data = serialRead()
-            # if data:
-            #     print(f"Received: {data}")
+            #Arduino forces green
+            if data=="green":
+                for i in sequence:
+                    if sequence[i]["color"]=="green":
+                        current_index = sequence[i]
+                    
     except serial.SerialException as e:
         print(f"Serial Error: {e}")
     except KeyboardInterrupt:
