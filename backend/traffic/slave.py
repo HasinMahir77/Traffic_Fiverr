@@ -114,6 +114,7 @@ sequence = None
 deviceIp = get_local_ip()
 deviceList = get_all_devices()
 device = None
+mode = "auto"
 
 if __name__ == "__main__":
     try:
@@ -145,17 +146,8 @@ if __name__ == "__main__":
 
         # Main loop
         while True:
-            try:
-                device = get_device(deviceName)
-                if not device:
-                    print(f"Failed to fetch data for device: {deviceName}. Retrying...")
-                    time.sleep(2)  # Retry after 2 seconds
-                    continue
-            except Exception as e:
-                print(f"Error fetching device data: {e}")
-                time.sleep(2)  # Retry after 2 seconds
-                continue
-
+            device = get_device(deviceName)
+            mode = deviceList[deviceName]["mode"]
             # Heartbeat
             try:
                 requests.post(
@@ -167,7 +159,10 @@ if __name__ == "__main__":
                 print(f"Heartbeat error: {e}")
 
             # Auto Mode
-            if device.get("mode") == "auto":
+            if device["mode"] == "manual":
+                color = device["manualColor"]
+                serialWrite(color)
+            elif device["mode"] == "auto":
                 current_time = time.time()
                 elapsed_time = current_time - last_send_time
                 timeLeft = max(0, math.ceil(sequence[str(current_index)]["time"] - elapsed_time))
