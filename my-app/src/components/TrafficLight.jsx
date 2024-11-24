@@ -7,6 +7,34 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 const TrafficLight = ({ serverIp, deviceName, initialSequence }) => {
   const [currentSequence, setCurrentSequence] = useState(initialSequence);
+  const [glow, setGlow] = useState("");
+  useEffect(() => {
+    // Set the interval to call fetchGlow every 500ms
+    const interval = setInterval(() => {
+      fetchGlow();
+    }, 500);
+
+    // Cleanup the interval on component unmount
+    return () => clearInterval(interval);
+  }, []); // Empty dependency array ensures this effect only runs once, on mount
+
+  const fetchGlow = async () => {
+    try {
+      const response = await fetch(serverIp + "/get_current_color");
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json(); // Await the JSON data
+      console.log(data); // Log the data
+      setGlow(data); // Update the state with the fetched data
+      setActiveLight(glow.color());
+      setTime(timeLeft);
+    } catch (err) {
+      console.log(err.message); // Log the error message
+    }
+  };
+
   function capitalizeFirstLetter(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
