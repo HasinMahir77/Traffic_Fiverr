@@ -1209,3 +1209,4 @@ backend/traffic/Scripts/pip3.exe
 backend/traffic/Scripts/python.exe
 backend/traffic/Scripts/pythonw.exe
 /backend/traffic/Lib
+backend/traffic/Scripts/normalizer.exe
