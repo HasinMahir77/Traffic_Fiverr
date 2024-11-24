@@ -1,5 +1,5 @@
 {
-  "Device1": {
+  "Master": {
     "0": { "color": "green", "time": 40 },
     "1": { "color": "yellow", "time": 5 },
     "2": { "color": "red", "time": 40 }
