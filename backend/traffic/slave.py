@@ -110,6 +110,10 @@ if __name__ == "__main__":
     try:
         
         while True:
+            #Manual mode
+            
+            
+            #Auto mode
             current_time = time.time()
             elapsed_time = current_time - last_send_time
             timeLeft = math.ceil(sequence[str(current_index)]["time"] - elapsed_time)
@@ -117,7 +121,6 @@ if __name__ == "__main__":
                 timeLeft=0
             requests.post(serverIp + "/setState/" + deviceName, json={"color": color, "timeLeft": timeLeft}, timeout=1)
         
-
             #Check is sequence has changed
             sequenceList = get_all_sequences()
             newSequence = sequenceList[deviceName]
