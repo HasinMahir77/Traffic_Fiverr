@@ -1,16 +1,20 @@
 {
   "Master": {
     "type": "master",
-    "ip": "192.168.1.10",
+    "ip": "192.168.0.187",
     "status": 1,
     "color": 0,
-    "timeLeft": 0
+    "timeLeft": 0,
+    "mode": "auto",
+    "manualColor": "red"
   },
   "Device1": {
     "type": "slave",
-    "ip": "192.168.0.187",
+    "ip": "1.1.1.1",
     "status": 1,
     "color": "green",
-    "timeLeft": 22.879214763641357
+    "timeLeft": 0,
+    "mode": "auto",
+    "manualColor": "red"
   }
 }
