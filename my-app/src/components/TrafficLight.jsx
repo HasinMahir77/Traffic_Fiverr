@@ -20,16 +20,15 @@ const TrafficLight = ({ serverIp, deviceName, initialSequence }) => {
 
   const fetchGlow = async () => {
     try {
-      const response = await fetch(serverIp + "/get_current_color");
+      const response = await fetch(serverIp + "/getDevice/" + deviceName);
       if (!response.ok) {
         throw new Error(`Error: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json(); // Await the JSON data
       console.log(data); // Log the data
-      setGlow(data); // Update the state with the fetched data
-      setActiveLight(glow.color());
-      setTime(timeLeft);
+      setActiveLight(data.color);
+      setTime(data.timeLeft);
     } catch (err) {
       console.log(err.message); // Log the error message
     }
