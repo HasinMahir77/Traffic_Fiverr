@@ -1,4 +1,5 @@
 {
+<<<<<<< Updated upstream
   "Master": {
     "type": "master",
     "ip": "192.168.0.187",
@@ -18,3 +19,24 @@
     "manualColor": "red"
   }
 }
+=======
+    "Master": {
+        "type": "master",
+        "ip": "192.168.0.187",
+        "status": 1,
+        "color": "green",
+        "timeLeft": 34,
+        "mode": "auto",
+        "manualColor": "yellow"
+    },
+    "Device1": {
+        "type": "slave",
+        "ip": "1.1.1.1",
+        "status": 1,
+        "color": "green",
+        "timeLeft": 0,
+        "mode": "auto",
+        "manualColor": "yellow"
+    }
+}
+>>>>>>> Stashed changes

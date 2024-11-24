@@ -167,7 +167,6 @@ function App() {
               key={key} // use device key as the key for React
               className={key} // You can use the key for className or any other prop
               deviceName={key} // Pass the key as deviceName
-              initialSequence={sequenceList[key]}
               serverIp={serverIp}
             />
           ))
