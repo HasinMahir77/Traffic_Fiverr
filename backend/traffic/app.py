@@ -160,6 +160,6 @@ def setState(deviceId):
     except Exception as e:
         return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 if __name__ == '__main__':
-        app.run(debug=True, threaded=True, host='0.0.0.0')
+        app.run(debug=False, threaded=True, host='0.0.0.0')
 
 

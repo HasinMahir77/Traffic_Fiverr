@@ -1,17 +1,15 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
 import json
 import requests
 import serial
 import socket
 import time
 import threading
+import math
 
 serverIp = "http://192.168.0.187:5000"
 arduino = serial.Serial(port='COM6', baudrate=9600, timeout=0.1)  
 
-app = Flask(__name__)
-CORS(app)
+
 
 def serialWrite(data):
     arduino.write(f"{data}\n".encode())  
@@ -77,33 +75,6 @@ def get_local_ip():
     except Exception as e:
         return f"Error: {e}"
 
-def run_sequence(sequence):
-    while True:
-        for item in sequence.values():
-            color = item["color"]
-            duration = item["time"]
-            
-            # Record the start time when we send the color
-            start_time = time.time()
-            
-            # Send the color once
-            serialWrite(color)
-            print(f"Sent {color} for {duration} seconds")
-            
-            # Continue checking elapsed time without blocking
-            while True:
-                # Calculate elapsed time
-                elapsed_time = time.time() - start_time
-                if elapsed_time >= duration:
-                    break  # Exit the loop after the required duration has passed
-                # You can add any other non-blocking tasks you want to perform here
-                # (e.g., check serial data, handle other logic, etc.)
-@app.route('/get_current_color', methods=['POST'])
-def get_current_color():
-    global last_send_time, color
-    timeLeft = time.time()-last_send_time
-    return jsonify({"color": color, "timeLeft": timeLeft})
-
 start_time = 0
 elapsed_time = 0
 last_send_time = 0
@@ -141,7 +112,7 @@ if __name__ == "__main__":
         while True:
             current_time = time.time()
             elapsed_time = current_time - last_send_time
-            timeLeft = int(sequence[str(current_index)]["time"] - elapsed_time)
+            timeLeft = math.ceil(sequence[str(current_index)]["time"] - elapsed_time)
             if timeLeft<0:
                 timeLeft=0
             requests.post(serverIp + "/setState/" + deviceName, json={"color": color, "timeLeft": timeLeft}, timeout=1)
