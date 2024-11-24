@@ -5,8 +5,8 @@ import Modal from "react-bootstrap/Modal";
 import { InputGroup, Form } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-const TrafficLight = ({ serverIp, deviceName, initialSequence }) => {
-  const [mode, setMode] = useState(0);
+const TrafficLight = ({ serverIp, deviceName }) => {
+  const [mode, setMode] = useState("auto");
   useEffect(() => {
     // Set the interval to call fetchGlow every 500ms
     const interval = setInterval(() => {
@@ -27,10 +27,10 @@ const TrafficLight = ({ serverIp, deviceName, initialSequence }) => {
       const data = await response.json(); // Await the JSON data
       console.log(data); // Log the data
       setMode(data.mode);
-      if (mode == "auto") {
+      if (mode === "auto") {
         setActiveLight(data.color);
         setTime(data.timeLeft);
-      } else if (mode == "manual") {
+      } else if (mode === "manual") {
         setActiveLight(data.manualColor);
         setTime("M");
       }
@@ -98,9 +98,7 @@ const TrafficLight = ({ serverIp, deviceName, initialSequence }) => {
   // Light control
   const [activeLight, setActiveLight] = useState("");
   const handleClick = (color) => {
-    if (mode == "manual") {
-      setManualColor(color);
-    }
+    setManualColor(color);
   };
 
   // Sequence control popup
