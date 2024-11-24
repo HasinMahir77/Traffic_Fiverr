@@ -57,6 +57,40 @@ function App() {
     setNewDeviceIp(event.target.value);
   };
   const addDevice = async () => {
+    // Function to validate IP address format
+    const isValidIP = (ip) => {
+      const ipPattern = /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/; // Matches "1-3 digits . 1-3 digits . 1-3 digits . 1-3 digits"
+      if (!ipPattern.test(ip)) return false; // If it doesn't match, it's invalid
+
+      // Further check: ensure all parts are numbers between 0 and 255
+      return ip.split(".").every((num) => {
+        const n = Number(num);
+        return n >= 0 && n <= 255;
+      });
+    };
+
+    // Function to validate device name
+    const isValidDeviceName = (name) => {
+      const namePattern = /^[a-zA-Z0-9_-]+$/; // Allows only alphanumeric characters, underscores, and hyphens
+      return namePattern.test(name);
+    };
+
+    // Validate newDeviceName
+    if (!newDeviceName || !isValidDeviceName(newDeviceName)) {
+      alert(
+        "Invalid device name! Please use only letters, numbers, underscores, or hyphens, with no spaces."
+      );
+      return; // Stop execution if name is invalid
+    }
+
+    // Validate newDeviceIp
+    if (!newDeviceIp || newDeviceIp.includes(" ") || !isValidIP(newDeviceIp)) {
+      alert(
+        "Invalid IP address! Please provide a valid IP (e.g., 192.168.0.1)."
+      );
+      return; // Stop execution if IP is invalid
+    }
+
     try {
       const response = await fetch(serverIp + `/addDevice/${newDeviceName}`, {
         method: "POST",
@@ -71,7 +105,8 @@ function App() {
       });
 
       const result = await response.json();
-      fetchAllDevices();
+      fetchAllDevices(); // Fetch updated list of devices
+
       if (response.ok) {
         alert(result.message); // Success message
       } else {
@@ -80,8 +115,9 @@ function App() {
     } catch (error) {
       console.error("Error adding device:", error.message);
     }
-    closeAddModal();
+    closeAddModal(); // Close the modal regardless of success or failure
   };
+
   const openAddModal = () => {
     setAddModal(true);
   };
@@ -145,14 +181,16 @@ function App() {
 
         {/* Dynamically render TrafficLights */}
         {Object.keys(deviceList).length > 0 ? (
-          Object.keys(deviceList).map((key) => (
-            <TrafficLight
-              key={key} // use device key as the key for React
-              className={key} // You can use the key for className or any other prop
-              deviceName={key} // Pass the key as deviceName
-              serverIp={serverIp}
-            />
-          ))
+          Object.keys(deviceList)
+            .sort((a, b) => (a === "Master" ? -1 : b === "Master" ? 1 : 0)) // Sort "Master" to the top
+            .map((key) => (
+              <TrafficLight
+                key={key} // use device key as the key for React
+                className={key} // You can use the key for className or any other prop
+                deviceName={key} // Pass the key as deviceName
+                serverIp={serverIp}
+              />
+            ))
         ) : (
           <p>No devices available</p> // Show a message if no devices exist
         )}
