@@ -4,15 +4,15 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: rgb(0, 0, 0);
-  /*background-color: rgb(250, 249, 246); /* Light background */
+  /*background-color: rgb(0, 0, 0);*/
+  background-color: rgb(250, 249, 246); /* Light background */
   height: 100vh; /* Takes full viewport height */
   margin: 0;
   padding: 0;
 }
 .modeLabel {
   font-size: 18px;
-  color: white;
+  color: rgb(0, 0, 0);
   display: flex;
   justify-content: center;
   align-items: center;
