@@ -30,7 +30,7 @@ const TrafficLight = ({ serverIp, deviceName, initialSequence }) => {
       if (mode == "auto") {
         setActiveLight(data.color);
         setTime(data.timeLeft);
-      } else {
+      } else if (mode == "manual") {
         setActiveLight(data.manualColor);
         setTime("M");
       }
