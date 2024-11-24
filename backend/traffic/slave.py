@@ -3,7 +3,6 @@ import requests
 import serial
 import socket
 import time
-import threading
 import math
 
 serverIp = "http://192.168.0.187:5000"
@@ -105,10 +104,11 @@ sequenceList = None
 sequence = None
 deviceIp = get_local_ip()
 deviceList = get_all_devices()
+device = None
 
 if __name__ == "__main__":
     try:
-        # Get deviceName and sequence based on IP
+        # Initialize start
         sequenceList = get_all_sequences()
         if not sequenceList or not deviceList:
             raise ValueError("Failed to fetch device or sequence list")
@@ -116,6 +116,7 @@ if __name__ == "__main__":
         for i in deviceList:
             if deviceList[i]["ip"] == deviceIp:
                 deviceName = i
+                device = deviceList[i]
                 sequence = sequenceList[deviceName]
                 print(f"Device Name: {deviceName}")
                 print(f"Sequence: {sequence}")
@@ -134,49 +135,53 @@ if __name__ == "__main__":
 
         # Main loop
         while True:
-            current_time = time.time()
-            elapsed_time = current_time - last_send_time
-            timeLeft = max(0, math.ceil(sequence[str(current_index)]["time"] - elapsed_time))
+            device = get_device(deviceName)
 
-            try:
-                requests.post(
-                    f"{serverIp}/setState/{deviceName}",
-                    json={"color": color, "timeLeft": timeLeft},
-                    timeout=1,
-                )
-            except requests.exceptions.RequestException as e:
-                print(f"Error posting state: {e}")
+            # Auto Mode
+            if device["mode"] == "auto":
+                current_time = time.time()
+                elapsed_time = current_time - last_send_time
+                timeLeft = max(0, math.ceil(sequence[str(current_index)]["time"] - elapsed_time))
 
-            # Check if sequence has changed
-            sequenceList = get_all_sequences()
-            newSequence = sequenceList.get(deviceName) if sequenceList else None
-            if sequence and newSequence and sequence != newSequence:
-                sequence = newSequence
-                current_index = 0
-                print("New Sequence detected. Flashing yellow for 5s")
+                try:
+                    requests.post(
+                        f"{serverIp}/setState/{deviceName}",
+                        json={"color": color, "timeLeft": timeLeft},
+                        timeout=1,
+                    )
+                except requests.exceptions.RequestException as e:
+                    print(f"Error posting state: {e}")
 
-                flashStartTime = time.time()
-                while time.time() - flashStartTime < 5:
-                    serialWrite("yellow")
-                print("Yellow flash stopped")
+                # Read data from Arduino if available
+                data = serialRead()
+                if data == "green":
+                    for i, seq in sequence.items():
+                        if seq["color"] == "green":
+                            current_index = int(i)
+                            break
 
-            # Check if it's time to send the next color
-            if elapsed_time >= duration:
-                current_index = (current_index + 1) % len(sequence)
-                color = sequence[str(current_index)]["color"]
-                duration = sequence[str(current_index)]["time"]
+                # Check if sequence has changed
+                sequenceList = get_all_sequences()
+                newSequence = sequenceList.get(deviceName) if sequenceList else None
+                if sequence and newSequence and sequence != newSequence:
+                    sequence = newSequence
+                    current_index = 0
+                    print("New Sequence detected. Flashing yellow for 5s")
 
-                print(f"Sending {color} for {duration} seconds...")
-                serialWrite(color)
-                last_send_time = current_time
+                    flashStartTime = time.time()
+                    while time.time() - flashStartTime < 5:
+                        serialWrite("yellow")
+                    print("Yellow flash stopped")
 
-            # Read data from Arduino if available
-            data = serialRead()
-            if data == "green":
-                for i, seq in sequence.items():
-                    if seq["color"] == "green":
-                        current_index = int(i)
-                        break
+                # Check if it's time to send the next color
+                if elapsed_time >= duration:
+                    current_index = (current_index + 1) % len(sequence)
+                    color = sequence[str(current_index)]["color"]
+                    duration = sequence[str(current_index)]["time"]
+
+                    print(f"Sending {color} for {duration} seconds...")
+                    serialWrite(color)
+                    last_send_time = current_time
 
     except KeyboardInterrupt:
         print("\nKeyboard Interrupt: Exiting...")
