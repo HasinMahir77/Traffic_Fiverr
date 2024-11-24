@@ -4,10 +4,10 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #121212;  /* Dark background */
-  height: 100vh;              /* Takes full viewport height */
+  background-color: #121212; /* Dark background */
+  height: 100vh; /* Takes full viewport height */
   margin: 0;
-  padding: 0;  
+  padding: 0;
 }
 .modeLabel {
   font-size: 18px;
@@ -29,10 +29,16 @@
   gap: 40px;
   justify-content: center;
 }
-.ManualControls{
+.ManualControls {
   position: fixed;
-  top: 10px;
-  height: 80vh;
+  top: 10vh;
+  height: 75vh;
 }
-
-
+.controlHeader {
+  height: 5vh;
+  position: fixed;
+  top: 2vh;
+  display: flex;
+  flex-direction: row;
+  gap: 10vw;
+}
