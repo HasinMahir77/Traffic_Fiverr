@@ -57,6 +57,27 @@ function App() {
     setNewDeviceIp(event.target.value);
   };
   const addDevice = async () => {
+    // Function to validate IP address format
+    const isValidIP = (ip) => {
+      // Check if the input matches the pattern of an IP address
+      const ipPattern = /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/; // Matches "1-3 digits . 1-3 digits . 1-3 digits . 1-3 digits"
+      if (!ipPattern.test(ip)) return false; // If it doesn't match, it's invalid
+
+      // Further check: ensure all parts are numbers between 0 and 255
+      return ip.split(".").every((num) => {
+        const n = Number(num);
+        return n >= 0 && n <= 255;
+      });
+    };
+
+    // Validate newDeviceIp
+    if (!newDeviceIp || newDeviceIp.includes(" ") || !isValidIP(newDeviceIp)) {
+      alert(
+        "Invalid IP address! Please provide a valid IP (e.g., 192.168.0.1)"
+      );
+      return; // Stop execution if IP is invalid
+    }
+
     try {
       const response = await fetch(serverIp + `/addDevice/${newDeviceName}`, {
         method: "POST",
@@ -71,7 +92,8 @@ function App() {
       });
 
       const result = await response.json();
-      fetchAllDevices();
+      fetchAllDevices(); // Fetch updated list of devices
+
       if (response.ok) {
         alert(result.message); // Success message
       } else {
@@ -80,8 +102,9 @@ function App() {
     } catch (error) {
       console.error("Error adding device:", error.message);
     }
-    closeAddModal();
+    closeAddModal(); // Close the modal regardless of success or failure
   };
+
   const openAddModal = () => {
     setAddModal(true);
   };
