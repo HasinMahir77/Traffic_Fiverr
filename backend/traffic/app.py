@@ -151,7 +151,25 @@ def setState(deviceId):
         with open(deviceListPath, 'w') as file:
             json.dump(device_list, file, indent=4)
 
-        return jsonify({"message": f"Device {deviceId} removed successfully"}), 200
+    except FileNotFoundError:
+        return jsonify({"error": "Device list file not found"}), 500
+    except json.JSONDecodeError:
+        return jsonify({"error": "Error decoding the device list file"}), 500
+    except Exception as e:
+        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+    
+@app.route('/setManualColor/<deviceId>', methods=['POST'])
+def setManualColor(deviceId):
+    try:
+        with open(deviceListPath, 'r') as file:
+            device_list = json.load(file)
+        if deviceId not in device_list:
+            return jsonify({"error": "Device doesn't exist"}), 400
+        #Changes here
+        data = request.get_json()
+        device_list[deviceId]["manualColor"] = data["manualColor"]
+        with open(deviceListPath, 'w') as file:
+            json.dump(device_list, file, indent=4)
 
     except FileNotFoundError:
         return jsonify({"error": "Device list file not found"}), 500
@@ -159,6 +177,7 @@ def setState(deviceId):
         return jsonify({"error": "Error decoding the device list file"}), 500
     except Exception as e:
         return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+    
 if __name__ == '__main__':
         app.run(debug=False, threaded=True, host='0.0.0.0')
 
