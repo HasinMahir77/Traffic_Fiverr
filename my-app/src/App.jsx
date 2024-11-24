@@ -181,14 +181,16 @@ function App() {
 
         {/* Dynamically render TrafficLights */}
         {Object.keys(deviceList).length > 0 ? (
-          Object.keys(deviceList).map((key) => (
-            <TrafficLight
-              key={key} // use device key as the key for React
-              className={key} // You can use the key for className or any other prop
-              deviceName={key} // Pass the key as deviceName
-              serverIp={serverIp}
-            />
-          ))
+          Object.keys(deviceList)
+            .sort((a, b) => (a === "Master" ? -1 : b === "Master" ? 1 : 0)) // Sort "Master" to the top
+            .map((key) => (
+              <TrafficLight
+                key={key} // use device key as the key for React
+                className={key} // You can use the key for className or any other prop
+                deviceName={key} // Pass the key as deviceName
+                serverIp={serverIp}
+              />
+            ))
         ) : (
           <p>No devices available</p> // Show a message if no devices exist
         )}
