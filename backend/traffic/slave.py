@@ -136,6 +136,17 @@ if __name__ == "__main__":
         # Main loop
         while True:
             device = get_device(deviceName)
+            #Heartbeat
+            try:
+                requests.post(
+                    f"{serverIp}/setLastReply/{deviceName}",
+                    json={"connected": 1},
+                    timeout=0.2,
+                )
+            except requests.exceptions.RequestException as e:
+                print(f"Heartbeat error: {e}")
+
+            
 
             # Auto Mode
             if device["mode"] == "auto":
@@ -147,7 +158,7 @@ if __name__ == "__main__":
                     requests.post(
                         f"{serverIp}/setState/{deviceName}",
                         json={"color": color, "timeLeft": timeLeft},
-                        timeout=1,
+                        timeout=0.2,
                     )
                 except requests.exceptions.RequestException as e:
                     print(f"Error posting state: {e}")
