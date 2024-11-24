@@ -1,14 +1,16 @@
 {
-    "Device1": {
-        "type": "master",
-        "name": "Device 1",
-        "ip": "192.168.1.10",
-        "mac": "00:1A:2B:3C:4D:5E",
-        "status": 1
-    },
-    "D1": {
-        "type": "slave",
-        "ip": "1.1.1.1",
-        "status": 1
-    }
+  "Master": {
+    "type": "master",
+    "ip": "192.168.1.10",
+    "status": 1,
+    "color": 0,
+    "timeLeft": 0
+  },
+  "Device1": {
+    "type": "slave",
+    "ip": "192.168.0.187",
+    "status": 1,
+    "color": "green",
+    "timeLeft": 22.879214763641357
+  }
 }
