@@ -38,6 +38,29 @@ const TrafficLight = ({ serverIp, deviceName, initialSequence }) => {
       console.log(err.message); // Log the error message
     }
   };
+  const setManualColor = async (color) => {
+    const url = serverIp + "/setManualColor/" + deviceName;
+    const payload = { manualColor: color }; // Your data to send
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload), // Convert data to JSON string
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+
+      const result = await response.json(); // Parse JSON response
+      console.log("Response:", result);
+    } catch (error) {
+      console.error("Error sending POST request:", error);
+    }
+  };
 
   function capitalizeFirstLetter(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -47,7 +70,7 @@ const TrafficLight = ({ serverIp, deviceName, initialSequence }) => {
   const [activeLight, setActiveLight] = useState("");
   const handleClick = (color) => {
     if (mode == "manual") {
-      setActiveLight(color);
+      setManualColor(color);
     }
   };
 
