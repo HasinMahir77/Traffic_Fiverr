@@ -7,11 +7,12 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 const TrafficLight = ({ serverIp, deviceName }) => {
   const [mode, setMode] = useState("auto");
+  const [connected, setConnected] = useState(false);
   useEffect(() => {
-    // Set the interval to call fetchGlow every 500ms
+    // Set the interval to update UI every 300ms
     const interval = setInterval(() => {
       updateUi();
-    }, 500);
+    }, 300);
 
     // Cleanup the interval on component unmount
     return () => clearInterval(interval);
@@ -20,8 +21,11 @@ const TrafficLight = ({ serverIp, deviceName }) => {
   const updateUi = async () => {
     try {
       const response = await fetch(serverIp + "/getDevice/" + deviceName);
+      setConnected(true);
+
       if (!response.ok) {
         throw new Error(`Error: ${response.status} ${response.statusText}`);
+        setConnected(false);
       }
 
       const data = await response.json(); // Await the JSON data
@@ -173,7 +177,7 @@ const TrafficLight = ({ serverIp, deviceName }) => {
     <div className="parentContainer">
       <span className="label">{deviceName ? deviceName : ""}</span>
       <div className="childContainer">
-        <Button variant="secondary" onClick={changeMode}>
+        <Button variant={connected ? "success" : "danger"} onClick={changeMode}>
           {mode === "auto" ? "A" : "M"}
         </Button>
         <div className="traffic-light-bar">
