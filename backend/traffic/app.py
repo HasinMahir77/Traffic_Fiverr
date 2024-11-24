@@ -6,8 +6,8 @@ app = Flask(__name__)
 CORS(app)
 
 #Paths 
-deviceListPath = r'E:\Projects\Traffic_Fiverr\backend\traffic\files\deviceList.json'
-sequenceListPath = r'E:\Projects\Traffic_Fiverr\backend\traffic\files\sequenceList.json'
+deviceListPath = r'backend/traffic/files/deviceList.json'
+sequenceListPath = r'backend/traffic/files/sequenceList.json'
 
 #GET Methods here
 @app.route('/getAllDevices/', methods=['GET'])
@@ -45,6 +45,19 @@ def getDevice(deviceId):
         return jsonify(device)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route('/getSequence/<deviceId>', methods=['GET'])
+def getSequence(deviceId):
+    print(f"Received request for device: {deviceId}")
+    try:
+        with open(sequenceListPath, 'r') as file:
+            sequence = json.load(file).get(deviceId, None)
+            if sequence is None:
+                return jsonify({"error": "Device not found"}), 404
+        return jsonify(sequence)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 #POST Methods here
 @app.route('/addDevice/<deviceId>', methods=['POST']) 
@@ -119,6 +132,6 @@ def changeSequence(deviceId):
     except Exception as e:
         return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+        app.run(debug=True, threaded=True, host='0.0.0.0')
 
 
