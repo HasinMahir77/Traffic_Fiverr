@@ -59,7 +59,6 @@ function App() {
   const addDevice = async () => {
     // Function to validate IP address format
     const isValidIP = (ip) => {
-      // Check if the input matches the pattern of an IP address
       const ipPattern = /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/; // Matches "1-3 digits . 1-3 digits . 1-3 digits . 1-3 digits"
       if (!ipPattern.test(ip)) return false; // If it doesn't match, it's invalid
 
@@ -70,10 +69,24 @@ function App() {
       });
     };
 
+    // Function to validate device name
+    const isValidDeviceName = (name) => {
+      const namePattern = /^[a-zA-Z0-9_-]+$/; // Allows only alphanumeric characters, underscores, and hyphens
+      return namePattern.test(name);
+    };
+
+    // Validate newDeviceName
+    if (!newDeviceName || !isValidDeviceName(newDeviceName)) {
+      alert(
+        "Invalid device name! Please use only letters, numbers, underscores, or hyphens, with no spaces."
+      );
+      return; // Stop execution if name is invalid
+    }
+
     // Validate newDeviceIp
     if (!newDeviceIp || newDeviceIp.includes(" ") || !isValidIP(newDeviceIp)) {
       alert(
-        "Invalid IP address! Please provide a valid IP (e.g., 192.168.0.1)"
+        "Invalid IP address! Please provide a valid IP (e.g., 192.168.0.1)."
       );
       return; // Stop execution if IP is invalid
     }
