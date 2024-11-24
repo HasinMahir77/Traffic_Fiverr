@@ -6,8 +6,7 @@ import { InputGroup, Form } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const TrafficLight = ({ serverIp, deviceName, initialSequence }) => {
-  const [currentSequence, setCurrentSequence] = useState(initialSequence);
-  const [glow, setGlow] = useState("");
+  const [mode, setMode] = useState(0);
   useEffect(() => {
     // Set the interval to call fetchGlow every 500ms
     const interval = setInterval(() => {
@@ -101,7 +100,6 @@ const TrafficLight = ({ serverIp, deviceName, initialSequence }) => {
       const result = await response.json();
       if (response.ok) {
         alert(result.message); // Success message
-        setCurrentSequence(data);
       } else {
         alert(result.error); // Error message
       }
