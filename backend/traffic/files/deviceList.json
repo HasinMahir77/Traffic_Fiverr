@@ -6,7 +6,7 @@
     "color": 0,
     "timeLeft": 0,
     "mode": "auto",
-    "manualColor": "red"
+    "manualColor": "yellow"
   },
   "Device1": {
     "type": "slave",
@@ -15,6 +15,6 @@
     "color": "green",
     "timeLeft": 0,
     "mode": "auto",
-    "manualColor": "red"
+    "manualColor": "yellow"
   }
 }
