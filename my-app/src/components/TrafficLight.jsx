@@ -20,28 +20,35 @@ const TrafficLight = ({ serverIp, deviceName }) => {
 
   const updateUi = async () => {
     try {
-      const response = await fetch(serverIp + "/getDevice/" + deviceName);
-      setConnected(true);
+      const response = await fetch(serverIp + "/getStatus/" + deviceName);
 
       if (!response.ok) {
+        // If response is not ok, throw an error
         throw new Error(`Error: ${response.status} ${response.statusText}`);
-        setConnected(false);
       }
 
       const data = await response.json(); // Await the JSON data
       console.log(data); // Log the data
+
+      // Only update connected when status changes
+      setConnected(data.status !== 0); // Set connected to true if status is not 0
+
+      // Update other states based on the response data
       setMode(data.mode);
-      if (mode === "auto") {
+      if (data.mode === "auto") {
         setActiveLight(data.color);
         setTime(data.timeLeft);
-      } else if (mode === "manual") {
+      } else if (data.mode === "manual") {
         setActiveLight(data.manualColor);
         setTime("M");
       }
     } catch (err) {
-      console.log(err.message); // Log the error message
+      // Log the error and set connected to false in case of failure
+      console.error(err.message);
+      setConnected(false); // Ensure connected is set to false on error
     }
   };
+
   const setManualColor = async (color) => {
     const url = serverIp + "/setManualColor/" + deviceName;
     const payload = { manualColor: color }; // Your data to send
