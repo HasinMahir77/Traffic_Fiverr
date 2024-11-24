@@ -10,14 +10,14 @@ const TrafficLight = ({ serverIp, deviceName, initialSequence }) => {
   useEffect(() => {
     // Set the interval to call fetchGlow every 500ms
     const interval = setInterval(() => {
-      fetchGlow();
+      updateUi();
     }, 500);
 
     // Cleanup the interval on component unmount
     return () => clearInterval(interval);
   }, []); // Empty dependency array ensures this effect only runs once, on mount
 
-  const fetchGlow = async () => {
+  const updateUi = async () => {
     try {
       const response = await fetch(serverIp + "/getDevice/" + deviceName);
       if (!response.ok) {
@@ -26,10 +26,39 @@ const TrafficLight = ({ serverIp, deviceName, initialSequence }) => {
 
       const data = await response.json(); // Await the JSON data
       console.log(data); // Log the data
-      setActiveLight(data.color);
-      setTime(data.timeLeft);
+      setMode(data.mode);
+      if (mode == "auto") {
+        setActiveLight(data.color);
+        setTime(data.timeLeft);
+      } else if (mode == "manual") {
+        setActiveLight(data.manualColor);
+        setTime("M");
+      }
     } catch (err) {
       console.log(err.message); // Log the error message
+    }
+  };
+  const setManualColor = async (color) => {
+    const url = serverIp + "/setManualColor/" + deviceName;
+    const payload = { manualColor: color }; // Your data to send
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload), // Convert data to JSON string
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+
+      const result = await response.json(); // Parse JSON response
+      console.log("Response:", result);
+    } catch (error) {
+      console.error("Error sending POST request:", error);
     }
   };
 
@@ -40,7 +69,9 @@ const TrafficLight = ({ serverIp, deviceName, initialSequence }) => {
   // Light control
   const [activeLight, setActiveLight] = useState("");
   const handleClick = (color) => {
-    setActiveLight(color);
+    if (mode == "manual") {
+      setManualColor(color);
+    }
   };
 
   // Sequence control popup
