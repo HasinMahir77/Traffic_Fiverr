@@ -10,14 +10,14 @@ const TrafficLight = ({ serverIp, deviceName, initialSequence }) => {
   useEffect(() => {
     // Set the interval to call fetchGlow every 500ms
     const interval = setInterval(() => {
-      fetchGlow();
+      updateUi();
     }, 500);
 
     // Cleanup the interval on component unmount
     return () => clearInterval(interval);
   }, []); // Empty dependency array ensures this effect only runs once, on mount
 
-  const fetchGlow = async () => {
+  const updateUi = async () => {
     try {
       const response = await fetch(serverIp + "/getDevice/" + deviceName);
       if (!response.ok) {
@@ -26,8 +26,14 @@ const TrafficLight = ({ serverIp, deviceName, initialSequence }) => {
 
       const data = await response.json(); // Await the JSON data
       console.log(data); // Log the data
-      setActiveLight(data.color);
-      setTime(data.timeLeft);
+      setMode(data.mode);
+      if (mode == "auto") {
+        setActiveLight(data.color);
+        setTime(data.timeLeft);
+      } else {
+        setActiveLight(data.manualColor);
+        setTime("M");
+      }
     } catch (err) {
       console.log(err.message); // Log the error message
     }
