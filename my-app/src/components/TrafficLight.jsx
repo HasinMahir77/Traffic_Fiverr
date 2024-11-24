@@ -16,7 +16,7 @@ const TrafficLight = ({ serverIp, deviceName }) => {
 
     // Cleanup the interval on component unmount
     return () => clearInterval(interval);
-  }, []); // Empty dependency array ensures this effect only runs once, on mount
+  }); // Empty dependency array ensures this effect only runs once, on mount
 
   const updateUi = async () => {
     try {
@@ -210,13 +210,17 @@ const TrafficLight = ({ serverIp, deviceName }) => {
 
         <div className="timer">
           <div className="timer-value">{time}</div>
-          <Button
-            className="sequenceButton"
-            variant="warning"
-            onClick={openModal}
-          >
-            Sequence
-          </Button>
+          {mode === "auto" ? (
+            <Button
+              className="sequenceButton"
+              variant="warning"
+              onClick={openModal}
+            >
+              Sequence
+            </Button>
+          ) : (
+            <></>
+          )}
         </div>
 
         {/* Mode selection popup */}
