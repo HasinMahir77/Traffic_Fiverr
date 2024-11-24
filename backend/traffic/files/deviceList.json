@@ -9,7 +9,7 @@
   "Device2": {
     "type": "slave",
     "name": "Device 2",
-    "ip": "192.168.1.11",
+    "ip": "192.168.0.187",
     "mac": "00:1A:2B:3C:4D:5F",
     "status": 0
   }

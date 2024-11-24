@@ -39,10 +39,10 @@ def getDevice(deviceId):
     print(f"Received request for sequence: {deviceId}")
     try:
         with open(sequenceListPath, 'r') as file:
-            sequence = json.load(file).get(deviceId, None)
-            if sequence is None:
+            sequenceList = json.load(file).get(deviceId, None)
+            if sequenceList is None:
                 return jsonify({"error": "Sequence not found"}), 404
-        return jsonify(sequence)
+        return jsonify(sequenceList[deviceId])
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
