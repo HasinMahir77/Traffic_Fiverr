@@ -59,6 +59,17 @@ def getSequence(deviceId):
         return jsonify(sequence)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+@app.route('/getStatus/<deviceId>', methods=['GET'])
+def getStatus(deviceId):
+    print(f"Received request for device: {deviceId}")
+    try:
+        with open(deviceListPath, 'r') as file:
+            sequence = json.load(file).get(deviceId, None)
+            if sequence is None:
+                return jsonify({"error": "Device not found"}), 404
+        return jsonify(deviceListPath[deviceId]["status"])
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 #POST Methods here
