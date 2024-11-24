@@ -44,7 +44,7 @@ def serialRead():
 def get_all_devices():
     url = f"{serverIp}/getAllDevices/"
     try:
-        response = requests.get(url)
+        response = requests.get(url, timeout=5)  # Added timeout
         response.raise_for_status()  # Raise an exception for HTTP errors
         return response.json()
     except requests.exceptions.RequestException as e:
@@ -55,7 +55,7 @@ def get_all_devices():
 def get_all_sequences():
     url = f"{serverIp}/getAllSequences/"
     try:
-        response = requests.get(url)
+        response = requests.get(url, timeout=5)  # Added timeout
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:
@@ -66,7 +66,7 @@ def get_all_sequences():
 def get_device(device_id):
     url = f"{serverIp}/getDevice/{device_id}"
     try:
-        response = requests.get(url)
+        response = requests.get(url, timeout=5)  # Added timeout
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:
@@ -77,7 +77,7 @@ def get_device(device_id):
 def get_sequence(device_id):
     url = f"{serverIp}/getSequence/{device_id}"
     try:
-        response = requests.get(url)
+        response = requests.get(url, timeout=5)  # Added timeout
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:
@@ -114,6 +114,7 @@ sequence = None
 deviceIp = get_local_ip()
 deviceList = get_all_devices()
 device = None
+mode = "auto"
 
 if __name__ == "__main__":
     try:
@@ -146,6 +147,7 @@ if __name__ == "__main__":
         # Main loop
         while True:
             device = get_device(deviceName)
+            mode = deviceList[deviceName]["mode"]
             # Heartbeat
             try:
                 requests.post(
@@ -157,7 +159,10 @@ if __name__ == "__main__":
                 print(f"Heartbeat error: {e}")
 
             # Auto Mode
-            if device["mode"] == "auto":
+            if device["mode"] == "manual":
+                color = device["manualColor"]
+                serialWrite(color)
+            elif device["mode"] == "auto":
                 current_time = time.time()
                 elapsed_time = current_time - last_send_time
                 timeLeft = max(0, math.ceil(sequence[str(current_index)]["time"] - elapsed_time))
@@ -166,55 +171,67 @@ if __name__ == "__main__":
                     requests.post(
                         f"{serverIp}/setState/{deviceName}",
                         json={"color": color, "timeLeft": timeLeft},
-                        timeout=0.2,
+                        timeout=0.5,  # Increased timeout for stability
                     )
                 except requests.exceptions.RequestException as e:
                     print(f"Error posting state: {e}")
 
                 # Read data from Arduino if available and arduino is connected
                 if arduino:
-                    data = serialRead()
-                    if data == "green":
-                        for i, seq in sequence.items():
-                            if seq["color"] == "green":
-                                current_index = int(i)
-                                break
+                    try:
+                        data = serialRead()
+                        if data == "green":
+                            for i, seq in sequence.items():
+                                if seq["color"] == "green":
+                                    current_index = int(i)
+                                    break
+                    except Exception as e:
+                        print(f"Error reading from Arduino: {e}")
 
                 # Check if sequence has changed
-                sequenceList = get_all_sequences()
-                newSequence = sequenceList.get(deviceName) if sequenceList else None
-                if sequence and newSequence and sequence != newSequence:
-                    sequence = newSequence
-                    current_index = 0
-                    print("New Sequence detected. Flashing yellow for 5s")
+                try:
+                    sequenceList = get_all_sequences()
+                    newSequence = sequenceList.get(deviceName) if sequenceList else None
+                    if sequence and newSequence and sequence != newSequence:
+                        sequence = newSequence
+                        current_index = 0
+                        print("New Sequence detected. Flashing yellow for 5s")
 
-                    flashStartTime = time.time()
-                    while time.time() - flashStartTime < 5:
-                        if arduino:
-                            serialWrite("yellow")
-                    print("Yellow flash stopped")
+                        flashStartTime = time.time()
+                        while time.time() - flashStartTime < 5:
+                            if arduino:
+                                serialWrite("yellow")
+                        print("Yellow flash stopped")
+                except Exception as e:
+                    print(f"Error checking for new sequence: {e}")
 
                 # Check if it's time to send the next color
-                if elapsed_time >= duration:
-                    current_index = (current_index + 1) % len(sequence)
-                    color = sequence[str(current_index)]["color"]
-                    duration = sequence[str(current_index)]["time"]
+                try:
+                    if elapsed_time >= duration:
+                        current_index = (current_index + 1) % len(sequence)
+                        color = sequence[str(current_index)]["color"]
+                        duration = sequence[str(current_index)]["time"]
 
-                    print(f"Sending {color} for {duration} seconds...")
-                    if arduino:  # Only attempt serialWrite if arduino is initialized
-                        serialWrite(color)
-                    last_send_time = current_time
+                        print(f"Sending {color} for {duration} seconds...")
+                        if arduino:  # Only attempt serialWrite if arduino is initialized
+                            serialWrite(color)
+                        last_send_time = current_time
+                except Exception as e:
+                    print(f"Error checking or sending next color: {e}")
 
-                # Try reconnecting periodically if serial is unavailable
-                if arduino is None or not arduino.is_open:
-                    reconnect_serial()
-                    time.sleep(5)  # Retry every 5 seconds
+            # Try reconnecting periodically if serial is unavailable
+            if arduino is None or not arduino.is_open:
+                reconnect_serial()
+                time.sleep(5)  # Retry every 5 seconds
 
     except KeyboardInterrupt:
         print("\nKeyboard Interrupt: Exiting...")
     except Exception as e:
         print(f"Unexpected error: {e}")
     finally:
-        if arduino and arduino.is_open:
-            arduino.close()
-            print("Serial connection closed.")
+        try:
+            if arduino and arduino.is_open:
+                arduino.close()
+                print("Serial connection closed.")
+        except Exception as e:
+            print(f"Error closing serial connection: {e}")

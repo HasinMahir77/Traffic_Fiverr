@@ -170,12 +170,30 @@ def removeDevice(deviceId):
 @app.route('/changeSequence/<deviceId>', methods=['POST'])
 def changeSequence(deviceId):
     try:
+        # Load the current sequence list
         with open(sequenceListPath, 'r') as file:
             sequence_list = json.load(file)
 
+        # Get the new sequence from the request
         new_sequence = request.get_json()
-        sequence_list[deviceId] = new_sequence
+        print(new_sequence)
 
+        # Transform the list format to the desired dictionary format with integer times
+        if isinstance(new_sequence, list):
+            transformed_sequence = {
+                str(index): {
+                    "color": step["color"],
+                    "time": int(step["time"])  # Ensure 'time' is cast to integer
+                }
+                for index, step in enumerate(new_sequence)
+            }
+        else:
+            return jsonify({"error": "Invalid format for sequence"}), 400
+
+        # Update the sequence for the given device ID
+        sequence_list[deviceId] = transformed_sequence
+
+        # Save the updated sequence list
         with open(sequenceListPath, 'w') as file:
             json.dump(sequence_list, file, indent=4)
 
@@ -183,6 +201,7 @@ def changeSequence(deviceId):
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 
 @app.route('/setState/<deviceId>', methods=['POST'])
