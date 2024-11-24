@@ -61,6 +61,35 @@ const TrafficLight = ({ serverIp, deviceName, initialSequence }) => {
       console.error("Error sending POST request:", error);
     }
   };
+  const changeMode = async () => {
+    const url = serverIp + "/setMode/" + deviceName;
+
+    let payload; // Declare payload outside the blocks
+    if (mode === "auto") {
+      payload = { mode: "manual" }; // Assign value based on condition
+    } else {
+      payload = { mode: "auto" }; // Assign value based on condition
+    }
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload), // Convert data to JSON string
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+
+      const result = await response.json(); // Parse JSON response
+      console.log("Response:", result);
+    } catch (error) {
+      console.error("Error sending POST request:", error);
+    }
+  };
 
   function capitalizeFirstLetter(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -146,6 +175,9 @@ const TrafficLight = ({ serverIp, deviceName, initialSequence }) => {
     <div className="parentContainer">
       <span className="label">{deviceName ? deviceName : ""}</span>
       <div className="childContainer">
+        <Button variant="secondary" onClick={changeMode}>
+          {mode === "auto" ? "A" : "M"}
+        </Button>
         <div className="traffic-light-bar">
           <button
             className={`traffic-light red ${

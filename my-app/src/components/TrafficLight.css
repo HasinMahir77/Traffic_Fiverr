@@ -78,7 +78,7 @@
   border-radius: 15px;
   background-color: darkslategray;
   border: 2px solid rgb(37, 37, 37);
-  width: 100%; /* Make it full width within parent container */
+  width: 90%; /* Make it full width within parent container */
 }
 
 /* Traffic light button adjustments */

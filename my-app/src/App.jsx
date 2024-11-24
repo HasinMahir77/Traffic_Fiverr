@@ -158,9 +158,7 @@ function App() {
         </Button>
       </div>
       <div className="ManualControls">
-        <div className="header">
-          <span className="modeLabel">{mode} mode</span>
-        </div>
+        <div className="header"></div>
 
         {/* Dynamically render TrafficLights */}
         {Object.keys(deviceList).length > 0 ? (
@@ -177,11 +175,7 @@ function App() {
           <p>No devices available</p> // Show a message if no devices exist
         )}
 
-        <div className="footer">
-          <Button variant="secondary" onClick={openModeModal}>
-            Select Mode
-          </Button>
-        </div>
+        <div className="footer"></div>
       </div>
 
       {/* Mode selection popup */}
