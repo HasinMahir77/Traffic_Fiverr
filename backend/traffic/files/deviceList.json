@@ -1,20 +1,22 @@
 {
-    "Master": {
-        "type": "master",
-        "ip": "192.168.0.187",
-        "status": 1,
-        "color": "green",
-        "timeLeft": 32,
-        "mode": "auto",
-        "manualColor": "yellow"
-    },
-    "Device1": {
-        "type": "slave",
-        "ip": "1.1.1.1",
-        "status": 1,
-        "color": "yellow",
-        "timeLeft": 0,
-        "mode": "auto",
-        "manualColor": "yellow"
-    }
+  "Master": {
+    "type": "master",
+    "ip": "192.168.0.187",
+    "status": 1,
+    "color": "green",
+    "timeLeft": 32,
+    "mode": "auto",
+    "manualColor": "yellow",
+    "lastReply": 0
+  },
+  "Device1": {
+    "type": "slave",
+    "ip": "1.1.1.1",
+    "status": 1,
+    "color": "yellow",
+    "timeLeft": 0,
+    "mode": "auto",
+    "manualColor": "yellow",
+    "lastReply": 0
+  }
 }
