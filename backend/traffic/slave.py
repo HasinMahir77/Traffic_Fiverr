@@ -44,7 +44,7 @@ def serialRead():
 def get_all_devices():
     url = f"{serverIp}/getAllDevices/"
     try:
-        response = requests.get(url, timeout=5)  # Added timeout
+        response = requests.get(url, timeout=0.1)  # Added timeout
         response.raise_for_status()  # Raise an exception for HTTP errors
         return response.json()
     except requests.exceptions.RequestException as e:
@@ -55,7 +55,7 @@ def get_all_devices():
 def get_all_sequences():
     url = f"{serverIp}/getAllSequences/"
     try:
-        response = requests.get(url, timeout=5)  # Added timeout
+        response = requests.get(url, timeout=0.1)  # Added timeout
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:
@@ -66,7 +66,7 @@ def get_all_sequences():
 def get_device(device_id):
     url = f"{serverIp}/getDevice/{device_id}"
     try:
-        response = requests.get(url, timeout=5)  # Added timeout
+        response = requests.get(url, timeout=0.1)  # Added timeout
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:
@@ -77,7 +77,7 @@ def get_device(device_id):
 def get_sequence(device_id):
     url = f"{serverIp}/getSequence/{device_id}"
     try:
-        response = requests.get(url, timeout=5)  # Added timeout
+        response = requests.get(url, timeout=0.1)  # Added timeout
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:
@@ -87,7 +87,7 @@ def get_sequence(device_id):
 
 def get_public_ip():
     try:
-        response = requests.get("https://api.ipify.org?format=json", timeout=5)
+        response = requests.get("https://api.ipify.org?format=json", timeout=0.1)
         return response.json()["ip"]
     except requests.exceptions.RequestException as e:
         print(f"Error fetching public IP: {e}")
