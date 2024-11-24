@@ -110,7 +110,7 @@ deviceIp = get_local_ip()
 deviceList = get_all_devices()  
 
 def run_flask():
-    app.run(threaded=True, host='0.0.0.0')
+    app.run(threaded=True, host='0.0.0.0', port=8000)
 
 if __name__ == "__main__":
     # Start Flask server in a separate thread
