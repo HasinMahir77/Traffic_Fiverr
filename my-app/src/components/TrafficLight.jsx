@@ -46,7 +46,9 @@ const TrafficLight = ({ serverIp, deviceName, initialSequence }) => {
   // Light control
   const [activeLight, setActiveLight] = useState("");
   const handleClick = (color) => {
-    setActiveLight(color);
+    if (mode == "manual") {
+      setActiveLight(color);
+    }
   };
 
   // Sequence control popup
