@@ -145,7 +145,9 @@ def setState(deviceId):
         if deviceId not in device_list:
             return jsonify({"error": "Device doesn't exist"}), 400
         #Changes here
-        device_list[deviceId]["color"]
+        newState = request.get_json()
+        device_list[deviceId]["color"] = newState["color"]
+        device_list[deviceId]["timeLeft"] = newState["timeLeft"]
         with open(deviceListPath, 'w') as file:
             json.dump(device_list, file, indent=4)
 

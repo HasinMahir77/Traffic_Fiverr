@@ -7,7 +7,7 @@ import socket
 import time
 import threading
 
-serverIp = "http://192.168.0.236:5000"
+serverIp = "http://192.168.0.187:5000"
 arduino = serial.Serial(port='COM6', baudrate=9600, timeout=0.1)  
 
 app = Flask(__name__)
@@ -107,6 +107,7 @@ def get_current_color():
 start_time = 0
 elapsed_time = 0
 last_send_time = 0
+timeLeft = 0
 deviceName = None
 sequenceList = None
 sequence = None
@@ -140,6 +141,9 @@ if __name__ == "__main__":
         while True:
             current_time = time.time()
             elapsed_time = current_time - last_send_time
+            timeLeft = sequence[str(current_index)]["time"] - elapsed_time
+            requests.post(serverIp + "/setState/" + deviceName, json={"color": color, "timeLeft": timeLeft}, timeout=1)
+        
 
             #Check is sequence has changed
             sequenceList = get_all_sequences()
