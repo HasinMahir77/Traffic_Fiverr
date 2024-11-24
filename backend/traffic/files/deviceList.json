@@ -1,31 +1,10 @@
 {
-<<<<<<< Updated upstream
-  "Master": {
-    "type": "master",
-    "ip": "192.168.0.187",
-    "status": 1,
-    "color": 0,
-    "timeLeft": 0,
-    "mode": "auto",
-    "manualColor": "yellow"
-  },
-  "Device1": {
-    "type": "slave",
-    "ip": "1.1.1.1",
-    "status": 1,
-    "color": "green",
-    "timeLeft": 0,
-    "mode": "auto",
-    "manualColor": "yellow"
-  }
-}
-=======
     "Master": {
         "type": "master",
         "ip": "192.168.0.187",
         "status": 1,
         "color": "green",
-        "timeLeft": 34,
+        "timeLeft": 32,
         "mode": "auto",
         "manualColor": "yellow"
     },
@@ -33,10 +12,9 @@
         "type": "slave",
         "ip": "1.1.1.1",
         "status": 1,
-        "color": "green",
+        "color": "yellow",
         "timeLeft": 0,
         "mode": "auto",
         "manualColor": "yellow"
     }
 }
->>>>>>> Stashed changes
