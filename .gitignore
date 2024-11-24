@@ -1210,5 +1210,8 @@ backend/traffic/Scripts/python.exe
 backend/traffic/Scripts/pythonw.exe
 /backend/traffic/Lib
 backend/traffic/Scripts/normalizer.exe
+<<<<<<< Updated upstream
+=======
 backend/traffic/files/deviceList.json
-backend/traffic/files/deviceList.json
+
+>>>>>>> Stashed changes
