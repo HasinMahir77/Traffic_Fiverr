@@ -45,6 +45,7 @@ def getDevice(deviceId):
         return jsonify(device)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
 
 @app.route('/getSequence/<deviceId>', methods=['GET'])
 def getSequence(deviceId):
@@ -76,7 +77,11 @@ def addDevice(deviceId): #Have to add default sequence as well!
         with open(sequenceListPath, 'r') as file:
             sequence_list = json.load(file)
             
-        new_sequence = request.get_json()
+        new_sequence = {
+    "0": { "color": "green", "time": 40 },
+    "1": { "color": "yellow", "time": 5 },
+    "2": { "color": "red", "time": 40 }
+  }
         sequence_list[deviceId] = new_sequence
 
         with open(sequenceListPath, 'w') as file:
@@ -129,6 +134,29 @@ def changeSequence(deviceId):
         return jsonify({"error": "Sequence list file not found"}), 500
     except json.JSONDecodeError:
         return jsonify({"error": "Error decoding the sequence list file"}), 500
+    except Exception as e:
+        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+
+@app.route('/setState/<deviceId>', methods=['POST'])
+def setState(deviceId):
+    try:
+        with open(deviceListPath, 'r') as file:
+            device_list = json.load(file)
+        if deviceId not in device_list:
+            return jsonify({"error": "Device doesn't exist"}), 400
+        #Changes here
+        newState = request.get_json()
+        device_list[deviceId]["color"] = newState["color"]
+        device_list[deviceId]["timeLeft"] = newState["timeLeft"]
+        with open(deviceListPath, 'w') as file:
+            json.dump(device_list, file, indent=4)
+
+        return jsonify({"message": f"Device {deviceId} removed successfully"}), 200
+
+    except FileNotFoundError:
+        return jsonify({"error": "Device list file not found"}), 500
+    except json.JSONDecodeError:
+        return jsonify({"error": "Error decoding the device list file"}), 500
     except Exception as e:
         return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 if __name__ == '__main__':
