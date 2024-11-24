@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import json
+import time
 
 app = Flask(__name__)
 CORS(app)
@@ -192,6 +193,31 @@ def setMode(deviceId):
         #Changes here
         data = request.get_json()
         device_list[deviceId]["mode"] = data["mode"]
+        with open(deviceListPath, 'w') as file:
+            json.dump(device_list, file, indent=4)
+
+    except FileNotFoundError:
+        return jsonify({"error": "Device list file not found"}), 500
+    except json.JSONDecodeError:
+        return jsonify({"error": "Error decoding the device list file"}), 500
+    except Exception as e:
+        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+
+@app.route('/setLastReply/<deviceId>', methods=['POST'])
+def setLastReply(deviceId):
+    try:
+        with open(deviceListPath, 'r') as file:
+            device_list = json.load(file)
+        if deviceId not in device_list:
+            return jsonify({"error": "Device doesn't exist"}), 400
+        #Changes here
+        data = request.get_json()
+        if (data["connected"]==1):
+            device_list[deviceId]["lastReply"]==time.time() #Update last reply
+        if (time.time()-device_list[deviceId]["lastReply"] < 1): #Got last reply 1s ago
+            device_list[deviceId]["status"] = 1
+        else:
+            device_list[deviceId]["status"] = 0
         with open(deviceListPath, 'w') as file:
             json.dump(device_list, file, indent=4)
 
