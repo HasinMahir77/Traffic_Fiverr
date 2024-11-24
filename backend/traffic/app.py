@@ -69,6 +69,10 @@ def addDevice(deviceId): #Have to add default sequence as well!
         if deviceId in device_list:
             return jsonify({"error": "Device ID already exists"}), 400
         new_device = request.get_json()
+        new_device["color"] = "yellow"
+        new_device["timeLeft"] = 0
+        new_device["mode"] = "auto"
+        new_device["manualColor"] = "yellow"
         device_list[deviceId] = new_device
 
         with open(deviceListPath, 'w') as file:
