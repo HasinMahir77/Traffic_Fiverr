@@ -14,7 +14,6 @@ sequenceListPath = r'backend/traffic/files/sequenceList.json'
 
 # Function to periodically check device statuses
 def monitor_device_status():
-    while True:
         try:
             with open(deviceListPath, 'r') as file:
                 device_list = json.load(file)
@@ -31,7 +30,7 @@ def monitor_device_status():
         except Exception as e:
             print(f"Error monitoring device statuses: {e}")
 
-        time.sleep(2)  # Check every 2 seconds
+        #time.sleep(2)  # Check every 2 seconds
 
 
 # Start the monitoring function in a separate thread
