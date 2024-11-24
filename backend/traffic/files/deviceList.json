@@ -3,18 +3,20 @@
     "type": "master",
     "ip": "192.168.0.187",
     "status": 1,
-    "color": 0,
-    "timeLeft": 0,
+    "color": "green",
+    "timeLeft": 32,
     "mode": "auto",
-    "manualColor": "red"
+    "manualColor": "yellow",
+    "lastReply": 0
   },
   "Device1": {
     "type": "slave",
     "ip": "1.1.1.1",
     "status": 1,
-    "color": "green",
+    "color": "yellow",
     "timeLeft": 0,
     "mode": "auto",
-    "manualColor": "red"
+    "manualColor": "yellow",
+    "lastReply": 0
   }
 }
