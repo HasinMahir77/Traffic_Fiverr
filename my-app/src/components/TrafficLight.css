@@ -25,8 +25,9 @@
 
 /* Label styling */
 .label {
-  font-size: 14px; /* Adjusted font size for mobile */
-  color: white;
+  font-size: 16px; /* Adjusted font size for mobile */
+  color: rgb(0, 0, 0);
+  font-weight: bold;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -47,9 +48,10 @@
 /* Timer container styling */
 .timer {
   font-size: 24px; /* Adjusted font size for mobile */
-  color: #ffffff;
+  font-weight: bold;
+  color: #000;
   font-family: "Digital-7", "Courier New", Courier, monospace;
-  background-color: #222;
+  background-color: #87ceeb;
   padding: 2px 4px; /* Reduced padding for mobile */
   border-radius: 8px;
   text-align: center;

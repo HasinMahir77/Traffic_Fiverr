@@ -13,6 +13,7 @@ def reconnect_serial():
     global arduino
     try:
         if arduino is None or not arduino.is_open:
+            arduino = None
             print("Attempting to reconnect to serial port...")
             arduino = serial.Serial(port='COM6', baudrate=9600, timeout=0.1)
             print("Successfully reconnected to serial.")
@@ -229,9 +230,9 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"Unexpected error: {e}")
     finally:
-        try:
-            if arduino and arduino.is_open:
-                arduino.close()
-                print("Serial connection closed.")
-        except Exception as e:
-            print(f"Error closing serial connection: {e}")
+        if arduino and not arduino.is_open:
+            print("Serial closed")
+            reconnect_serial()
+            
+                
+            

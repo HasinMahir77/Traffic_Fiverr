@@ -3,11 +3,11 @@
         "type": "master",
         "ip": "192.168.0.187",
         "status": 1,
-        "color": "green",
-        "timeLeft": 5,
+        "color": "red",
+        "timeLeft": 4,
         "mode": "auto",
         "manualColor": "yellow",
-        "lastReply": 1732483352.4484541
+        "lastReply": 1732486662.0038292
     },
     "Device1": {
         "type": "slave",
