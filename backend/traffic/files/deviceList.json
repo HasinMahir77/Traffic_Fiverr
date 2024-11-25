@@ -2,21 +2,11 @@
     "Master": {
         "type": "master",
         "ip": "192.168.0.187",
-        "status": 1,
-        "color": "red",
-        "timeLeft": 4,
-        "mode": "auto",
-        "manualColor": "yellow",
-        "lastReply": 1732486662.0038292
-    },
-    "Device1": {
-        "type": "slave",
-        "ip": "1.1.1.1",
         "status": 0,
-        "color": "yellow",
-        "timeLeft": 0,
+        "color": "green",
+        "timeLeft": 32,
         "mode": "auto",
         "manualColor": "yellow",
-        "lastReply": 0
+        "lastReply": 1732497321.611609
     }
 }

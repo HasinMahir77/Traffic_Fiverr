@@ -1215,3 +1215,5 @@ backend/traffic/Scripts/normalizer.exe
 backend/traffic/files/deviceList.json
 
 >>>>>>> Stashed changes
+backend/traffic/files/deviceList.json
+backend/traffic/files/sequenceList.json
