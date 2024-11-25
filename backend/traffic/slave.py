@@ -200,6 +200,16 @@ if __name__ == "__main__":
 
                         flashStartTime = time.time()
                         while time.time() - flashStartTime < 5:
+                            try:
+                                requests.post(
+                                f"{serverIp}/setState/{deviceName}",
+                                json={"color": "yellow", "timeLeft": timeLeft},
+                                timeout=0.5,  # Increased timeout for stability
+                                )
+                            except requests.exceptions.RequestException as e:
+                                print(f"Error: {e}")
+            
+                            
                             if arduino:
                                 serialWrite("yellow")
                         print("Yellow flash stopped")

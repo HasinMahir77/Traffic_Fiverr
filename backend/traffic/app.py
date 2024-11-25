@@ -92,7 +92,11 @@ def getStatus(deviceId):
         if not device:
             return jsonify({"error": "Device not found"}), 404
 
-        print(f"Device Status for {deviceId}: {device['status']}")  # Debug log
+        if (time.time()-deviceList[deviceId]["lastReply"]>0.5):
+            deviceList[deviceId]["status"] = 0
+        else:
+            deviceList[deviceId]["status"] = 1
+        
         response = {
             "mode": device["mode"],
             "color": device.get("color"),
@@ -279,8 +283,8 @@ def setLastReply(deviceId):
         data = request.get_json()
 
         if data.get("connected") == 1:
-            device_list[deviceId]["lastReply"] = time.time()
-            device_list[deviceId]["status"] = 1  # Set status to 1 when connected
+            lastReply = time.time()
+            device_list[deviceId]["lastReply"] = lastReply
 
         with open(deviceListPath, 'w') as file:
             json.dump(device_list, file, indent=4)
