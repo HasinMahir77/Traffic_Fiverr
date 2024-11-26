@@ -26,7 +26,7 @@
 /* Label styling */
 .label {
   font-size: 16px; /* Adjusted font size for mobile */
-  color: rgb(0, 0, 0);
+  color: rgb(219, 219, 219);
   font-weight: bold;
   display: flex;
   justify-content: center;
@@ -49,7 +49,7 @@
 .timer {
   font-size: 24px; /* Adjusted font size for mobile */
   font-weight: bold;
-  color: #000;
+  color: #000000;
   font-family: "Digital-7", "Courier New", Courier, monospace;
   background-color: #87ceeb;
   padding: 2px 4px; /* Reduced padding for mobile */
