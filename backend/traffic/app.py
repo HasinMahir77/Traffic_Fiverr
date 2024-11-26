@@ -103,6 +103,7 @@ def getStatus(deviceId):
             "timeLeft": device.get("timeLeft"),
             "manualColor": device.get("manualColor"),
             "status": device.get("status", 0),
+            "arduino": device.get("arduino",0)
         }
         return jsonify(response)
     except Exception as e:
@@ -120,10 +121,13 @@ def addDevice(deviceId):
             return jsonify({"error": "Device ID already exists"}), 400
 
         new_device = request.get_json()
+        new_device["status"] = 0
         new_device["color"] = "yellow"
         new_device["timeLeft"] = 0
         new_device["mode"] = "auto"
         new_device["manualColor"] = "yellow"
+        new_device["lastReply"] = "0"
+        new_device["arduino"] = 0
         device_list[deviceId] = new_device
 
         with open(deviceListPath, 'w') as file:
@@ -219,6 +223,7 @@ def setState(deviceId):
         newState = request.get_json()
         device_list[deviceId]["color"] = newState["color"]
         device_list[deviceId]["timeLeft"] = newState["timeLeft"]
+        device_list[deviceId]["arduino"] = newState["arduino"]
 
         with open(deviceListPath, 'w') as file:
             json.dump(device_list, file, indent=4)

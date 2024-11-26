@@ -177,7 +177,6 @@ if __name__ == "__main__":
                 timeLeft = max(0, math.ceil(sequence[str(current_index)]["time"] - elapsed_time))
 
                 try:
-
                     requests.post(
                         f"{serverIp}/setState/{deviceName}",
                         json={"color": color, "timeLeft": timeLeft, "arduino":arduinoConnected()},
