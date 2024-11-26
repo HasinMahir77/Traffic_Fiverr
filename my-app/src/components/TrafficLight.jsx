@@ -31,7 +31,7 @@ const TrafficLight = ({ serverIp, deviceName }) => {
       console.log(data); // Log the data
 
       // Only update connected when status changes
-      setConnected(data.status !== 0); // Set connected to true if status is not 0
+      setConnected(data.status !== 0 && data.arduino !== 0); // Set connected to true if status is not 0
 
       // Update other states based on the response data
       setMode(data.mode);

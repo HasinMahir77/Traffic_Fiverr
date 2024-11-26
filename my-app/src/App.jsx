@@ -100,7 +100,6 @@ function App() {
         body: JSON.stringify({
           type: "slave",
           ip: newDeviceIp,
-          status: 1,
         }), // Send device data as JSON
       });
 
