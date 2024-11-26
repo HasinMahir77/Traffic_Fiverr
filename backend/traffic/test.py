@@ -1,11 +1,30 @@
-import socket
-def get_local_ip():
+import time
+import serial
+arduino = None
+i= 0
+def connect_serial():
+    global arduino
     try:
-        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
-            s.connect(("8.8.8.8", 80))  
-            local_ip = s.getsockname()[0]  
-        return local_ip
-    except Exception as e:
-        return f"Error: {e}"
+            arduino = serial.Serial(port='COM6', baudrate=9600, timeout=0.1)
+            print("Successfully reconnected to serial.")
+
+    except serial.SerialException as e:
+        print(f"Error reconnecting to serial")
+def arduinoConnected():
+    global arduino
+    try:
+        if arduino:
+            arduino.readline()
+            return True
+    except serial.SerialException as e:
+        return False
     
-print(get_local_ip())
+connect_serial()
+while 1:
+    if (arduinoConnected()):
+        print("Connected")
+    else:
+        print("Disconnected. Attempting Reconnection")
+        connect_serial()
+    time.sleep(0.5)
+    
