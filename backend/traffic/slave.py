@@ -41,9 +41,9 @@ def arduinoConnected():
     try:
         if arduino:
             arduino.readline()
-            return True
+            return 1
     except serial.SerialException as e:
-        return False
+        return 0
     
 
 
@@ -177,9 +177,10 @@ if __name__ == "__main__":
                 timeLeft = max(0, math.ceil(sequence[str(current_index)]["time"] - elapsed_time))
 
                 try:
+
                     requests.post(
                         f"{serverIp}/setState/{deviceName}",
-                        json={"color": color, "timeLeft": timeLeft},
+                        json={"color": color, "timeLeft": timeLeft, "arduino":arduinoConnected()},
                         timeout=0.5,  # Increased timeout for stability
                     )
                 except requests.exceptions.RequestException as e:
