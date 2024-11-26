@@ -9,26 +9,24 @@ serverIp = "http://192.168.0.187:5000"
 arduino = None  # Initialize arduino to None first
 
 # Function to attempt reconnecting to the serial port
-def reconnect_serial():
+def connect_serial():
     global arduino
     try:
-        if arduino is None or not arduino.is_open:
-            arduino = None
-            print("Attempting to reconnect to serial port...")
-            arduino = serial.Serial(port='COM6', baudrate=9600, timeout=0.1)
-            print("Successfully reconnected to serial.")
+        print("Attempting to reconnect to serial port...")
+        arduino = serial.Serial(port='COM6', baudrate=9600, timeout=0.1)
+        print("Successfully reconnected to serial.")
     except serial.SerialException as e:
-        print(f"Error reconnecting to serial: {e}")
+        print(f"Error reconnecting to serial")
 
 
 def serialWrite(data):
     try:
         if arduino and arduino.is_open:
             arduino.write(f"{data}\n".encode())
+            print("Written to serial: "+ data)
             time.sleep(0.1)
     except serial.SerialException as e:
         print(f"Error writing to serial: {e}")
-        reconnect_serial()  # Try to reconnect if the serial is unavailable
 
 
 def serialRead():
@@ -38,8 +36,15 @@ def serialRead():
             return data
     except serial.SerialException as e:
         print(f"Error reading from serial: {e}")
-        reconnect_serial()  # Try to reconnect if the serial is unavailable
-    return None
+def arduinoConnected():
+    global arduino
+    try:
+        if arduino:
+            arduino.readline()
+            return True
+    except serial.SerialException as e:
+        return False
+    
 
 
 def get_all_devices():
@@ -120,6 +125,7 @@ mode = "auto"
 if __name__ == "__main__":
     try:
         # Initialize start
+        connect_serial()
         sequenceList = get_all_sequences()
         if not sequenceList or not deviceList:
             raise ValueError("Failed to fetch device or sequence list")
@@ -142,11 +148,13 @@ if __name__ == "__main__":
         color = sequence[str(current_index)]["color"]
         duration = sequence[str(current_index)]["time"]
         print(f"Sending {color} for {duration} seconds...")
-        if arduino:  # Only attempt serialWrite if arduino is initialized
-            serialWrite(color)
+        serialWrite(color)
 
         # Main loop
         while True:
+            if (not arduinoConnected()):
+                print("Arduino disconnected. Attempting reconnection.")
+                connect_serial()
             device = get_device(deviceName)
             mode = deviceList[deviceName]["mode"]
             # Heartbeat
@@ -179,15 +187,13 @@ if __name__ == "__main__":
 
                 # Read data from Arduino if available and arduino is connected
                 if arduino:
-                    try:
-                        data = serialRead()
-                        if data == "green":
-                            for i, seq in sequence.items():
-                                if seq["color"] == "green":
-                                    current_index = int(i)
-                                    break
-                    except Exception as e:
-                        print(f"Error reading from Arduino: {e}")
+                    data = serialRead()
+                    if data == "green":
+                        for i, seq in sequence.items():
+                            if seq["color"] == "green":
+                                current_index = int(i)
+                                break
+
 
                 # Check if sequence has changed
                 try:
@@ -208,7 +214,6 @@ if __name__ == "__main__":
                                 )
                             except requests.exceptions.RequestException as e:
                                 print(f"Error: {e}")
-            
                             
                             if arduino:
                                 serialWrite("yellow")
@@ -223,26 +228,18 @@ if __name__ == "__main__":
                         color = sequence[str(current_index)]["color"]
                         duration = sequence[str(current_index)]["time"]
 
-                        print(f"Sending {color} for {duration} seconds...")
+                        
                         if arduino:  # Only attempt serialWrite if arduino is initialized
-                            serialWrite(color)
+                            print(f"Sending {color} for {duration} seconds...")
+                            serialWrite(str(color))
                         last_send_time = current_time
                 except Exception as e:
-                    print(f"Error checking or sending next color: {e}")
-
-            # Try reconnecting periodically if serial is unavailable
-            if arduino is None or not arduino.is_open:
-                reconnect_serial()
-                time.sleep(5)  # Retry every 5 seconds
+                    print(f"Error checking or sending next color: {e.with_traceback}")
 
     except KeyboardInterrupt:
         print("\nKeyboard Interrupt: Exiting...")
     except Exception as e:
         print(f"Unexpected error: {e}")
-    finally:
-        if arduino and not arduino.is_open:
-            print("Serial closed")
-            reconnect_serial()
             
                 
             
