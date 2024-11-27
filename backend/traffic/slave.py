@@ -201,7 +201,6 @@ if __name__ == "__main__":
                                 current_index = int(i)
                                 break
 
-
                 # Check if sequence has changed
                 try:
                     sequenceList = get_all_sequences()
@@ -219,11 +218,10 @@ if __name__ == "__main__":
                                 json={"color": "yellow", "timeLeft": timeLeft},
                                 timeout=0.5,  # Increased timeout for stability
                                 )
+                                serialWrite("yellow")
                             except requests.exceptions.RequestException as e:
                                 print(f"Error: {e}")
-                            
-                            if arduino:
-                                serialWrite("yellow")
+                                
                         print("Yellow flash stopped")
                 except Exception as e:
                     print(f"Error checking for new sequence: {e}")

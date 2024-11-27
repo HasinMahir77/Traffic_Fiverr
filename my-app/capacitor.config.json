@@ -1,6 +1,6 @@
 {
-  "appId": "com.tl.alpha",
-  "appName": "Traffic Lights Alpha",
+  "appId": "com.traffic.beta",
+  "appName": "Traffic Lights Beta",
   "webDir": "build",
   "server": {
     "allowMixedContent": true

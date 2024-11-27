@@ -3,10 +3,11 @@
         "type": "master",
         "ip": "192.168.0.187",
         "status": 0,
-        "color": "green",
-        "timeLeft": 20,
+        "color": "red",
+        "timeLeft": 31,
         "mode": "auto",
-        "manualColor": "yellow",
-        "lastReply": 1732656185.9945364
+        "manualColor": "green",
+        "lastReply": 1732665721.5409892,
+        "arduino": 1
     }
 }
