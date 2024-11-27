@@ -7,37 +7,10 @@ import Button from "react-bootstrap/Button";
 import { InputGroup, Form } from "react-bootstrap";
 import Dropdown from "react-bootstrap/Dropdown";
 import DropdownButton from "react-bootstrap/DropdownButton";
-import { Capacitor } from "@capacitor/core";
-import { Preferences } from "@capacitor/preferences";
 
 function App() {
   const [deviceList, setDeviceList] = useState({});
-  const [serverIp, setServerIp] = useState("http://192.168.0.236:5000");
-
-  async function setServerIP(ip) {
-    if (Capacitor.isNativePlatform()) {
-      // Use Preferences on native platforms
-      await Preferences.set({ key: "serverIP", value: serverIp });
-    } else {
-      // Use localStorage on the web
-      localStorage.setItem("serverIP", serverIp);
-    }
-    console.log("Server IP saved:", serverIp);
-  }
-
-  async function getServerIP() {
-    if (Capacitor.isNativePlatform()) {
-      // Use Preferences on native platforms
-      const { value } = await Preferences.get({ key: "serverIP" });
-      console.log("Retrieved Server IP:", value);
-      return value;
-    } else {
-      // Use localStorage on the web
-      const value = localStorage.getItem("serverIP");
-      console.log("Retrieved Server IP:", value);
-      return value;
-    }
-  }
+  const serverIp = "http://192.168.0.187:5000";
 
   const fetchAllDevices = async () => {
     try {
