@@ -121,6 +121,9 @@ deviceIp = get_local_ip()
 deviceList = get_all_devices()
 device = None
 mode = "auto"
+sendFlag = 0
+#Manual Mode vars
+prevColor = 0
 
 if __name__ == "__main__":
     try:
@@ -167,10 +170,14 @@ if __name__ == "__main__":
             except requests.exceptions.RequestException as e:
                 print(f"Heartbeat error: {e}")
 
-            # Auto Mode
+            # Manual Mode
             if device["mode"] == "manual":
                 color = device["manualColor"]
-                serialWrite(color)
+                if color!=prevColor:
+                    serialWrite(color)
+                    prevColor = color
+        
+            # Auto Mode
             elif device["mode"] == "auto":
                 current_time = time.time()
                 elapsed_time = current_time - last_send_time
