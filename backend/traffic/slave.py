@@ -121,11 +121,18 @@ deviceIp = get_local_ip()
 deviceList = get_all_devices()
 device = None
 mode = "auto"
+sendFlag = 0
+#Manual Mode vars
+prevColor = 0
 
 if __name__ == "__main__":
     try:
         # Initialize start
-        connect_serial()
+   
+        #connect_serial()
+    
+    
+        
         sequenceList = get_all_sequences()
         if not sequenceList or not deviceList:
             raise ValueError("Failed to fetch device or sequence list")
@@ -167,10 +174,14 @@ if __name__ == "__main__":
             except requests.exceptions.RequestException as e:
                 print(f"Heartbeat error: {e}")
 
-            # Auto Mode
+            # Manual Mode
             if device["mode"] == "manual":
                 color = device["manualColor"]
-                serialWrite(color)
+                if color!=prevColor:
+                    serialWrite(color)
+                    prevColor = color
+        
+            # Auto Mode
             elif device["mode"] == "auto":
                 current_time = time.time()
                 elapsed_time = current_time - last_send_time
@@ -194,7 +205,6 @@ if __name__ == "__main__":
                                 current_index = int(i)
                                 break
 
-
                 # Check if sequence has changed
                 try:
                     sequenceList = get_all_sequences()
@@ -212,11 +222,10 @@ if __name__ == "__main__":
                                 json={"color": "yellow", "timeLeft": timeLeft},
                                 timeout=0.5,  # Increased timeout for stability
                                 )
+                                serialWrite("yellow")
                             except requests.exceptions.RequestException as e:
                                 print(f"Error: {e}")
-                            
-                            if arduino:
-                                serialWrite("yellow")
+                                
                         print("Yellow flash stopped")
                 except Exception as e:
                     print(f"Error checking for new sequence: {e}")
