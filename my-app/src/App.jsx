@@ -213,18 +213,16 @@ function App() {
     <div className="App">
       <div className="controlHeader">
         <Button onClick={openServerModal} variant="warning">
-          Set Server
+          Server
         </Button>
         <Button onClick={openAddModal} variant="primary">
-          Add Device
+          Add
         </Button>
         <Button onClick={openCloseModal} variant="danger">
-          Remove Device
+          Remove
         </Button>
       </div>
       <div className="ManualControls">
-        <div className="header"></div>
-
         {/* Dynamically render TrafficLights */}
         {Object.keys(deviceList).length > 0 ? (
           Object.keys(deviceList)
@@ -240,8 +238,6 @@ function App() {
         ) : (
           <p>No devices available</p> // Show a message if no devices exist
         )}
-
-        <div className="footer"></div>
       </div>
       {/* Server popup */}
       <Modal

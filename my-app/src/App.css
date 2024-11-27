@@ -9,6 +9,8 @@
   height: 100vh; /* Takes full viewport height */
   margin: 0;
   padding: 0;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 .modeLabel {
   font-size: 18px;
@@ -24,22 +26,19 @@
   gap: 40px;
   justify-content: center;
 }
-.footer {
-  display: flex;
-  flex-direction: row;
-  gap: 40px;
-  justify-content: center;
-}
+
 .ManualControls {
   position: fixed;
   top: 10vh;
   height: 75vh;
 }
 .controlHeader {
+  align-items: center;
   height: 5vh;
   position: fixed;
-  top: 2vh;
+  top: 1vh;
   display: flex;
   flex-direction: row;
-  gap: 3vw;
+  gap: 4vw;
+  font-size: smaller;
 }

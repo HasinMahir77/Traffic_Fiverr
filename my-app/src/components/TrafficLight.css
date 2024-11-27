@@ -3,12 +3,12 @@
   display: flex;
   align-items: center; /* Align the items horizontally */
   flex-direction: column;
-  gap: 2px;
+  gap: 0px;
 }
 .childContainer {
   display: flex;
   align-items: center; /* Align the items horizontally */
-  gap: 10px; /* Reduced gap between elements */
+  gap: 5x; /* Reduced gap between elements */
   width: 90vw; /* Make sure it takes up 90% of the viewport width */
   height: 12vh;
   max-width: 380px; /* Limit to a maximum width (for 18:9 phones) */
@@ -132,8 +132,8 @@
     position: relative;
     left: 0px;
     width: 80vw; /* Full width for very small devices */
-    padding: 10px; /* Add some padding to avoid touching the screen edges */
-    gap: 5px; /* Smaller gap between elements */
+    padding: 2px; /* Add some padding to avoid touching the screen edges */
+    gap: 0px; /* Smaller gap between elements */
     flex-direction: column; /* Ensure they stay in row */
     flex-wrap: nowrap; /* Prevent wrapping */
   }
