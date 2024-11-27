@@ -128,7 +128,12 @@ prevColor = 0
 if __name__ == "__main__":
     try:
         # Initialize start
-        connect_serial()
+        try:
+            connect_serial()
+        except:
+            print("Warning: Arduino not found")
+    
+        
         sequenceList = get_all_sequences()
         if not sequenceList or not deviceList:
             raise ValueError("Failed to fetch device or sequence list")
