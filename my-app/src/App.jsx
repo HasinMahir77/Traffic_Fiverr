@@ -7,10 +7,52 @@ import Button from "react-bootstrap/Button";
 import { InputGroup, Form } from "react-bootstrap";
 import Dropdown from "react-bootstrap/Dropdown";
 import DropdownButton from "react-bootstrap/DropdownButton";
+import { Preferences } from "@capacitor/preferences";
+import { Capacitor } from "@capacitor/core";
 
 function App() {
   const [deviceList, setDeviceList] = useState({});
-  const serverIp = "http://192.168.0.187:5000";
+  const [serverIp, setServerIp] = useState("");
+  const [newServerIp, setNewServerIp] = useState("");
+  const [serverModal, setServerModal] = useState(false);
+
+  const handleServerIpChange = (event) => {
+    setNewServerIp(event.target.value);
+  };
+  const openServerModal = () => {
+    setServerModal(true);
+  };
+  const closeServerModal = () => {
+    setServerModal(false);
+  };
+
+  // Set the server IP function
+  async function setServerIP() {
+    const fullServerIp = "http://" + newServerIp + ":5000"; // Construct the full server IP with port
+    if (Capacitor.isNativePlatform()) {
+      await Preferences.set({ key: "serverIP", value: fullServerIp });
+    } else {
+      localStorage.setItem("serverIP", fullServerIp);
+    }
+    setServerIp(fullServerIp); // Update state
+    console.log("Server IP saved and updated:", fullServerIp);
+    closeServerModal(); // Close the modal
+  }
+
+  // Get the server IP function
+  async function getServerIP() {
+    let savedIp = "";
+    if (Capacitor.isNativePlatform()) {
+      const { value } = await Preferences.get({ key: "serverIP" });
+      savedIp = value;
+    } else {
+      savedIp = localStorage.getItem("serverIP");
+    }
+    if (savedIp) {
+      setServerIp(savedIp);
+      console.log("Retrieved Server IP:", savedIp);
+    }
+  }
 
   const fetchAllDevices = async () => {
     try {
@@ -28,8 +70,9 @@ function App() {
   };
 
   useEffect(() => {
+    getServerIP();
     fetchAllDevices();
-  }, []);
+  }, [serverIp]);
 
   // Mode States
   const [modeModal, setModeModal] = useState(false);
@@ -53,9 +96,7 @@ function App() {
     setNewDeviceName(event.target.value);
   };
   const [newDeviceIp, setNewDeviceIp] = useState("");
-  const handleNewDeviceIpChange = (event) => {
-    setNewDeviceIp(event.target.value);
-  };
+
   const addDevice = async () => {
     // Function to validate IP address format
     const isValidIP = (ip) => {
@@ -116,6 +157,9 @@ function App() {
     }
     closeAddModal(); // Close the modal regardless of success or failure
   };
+  const handleNewDeviceIpChange = (event) => {
+    setNewDeviceIp(event.target.value);
+  };
 
   const openAddModal = () => {
     setAddModal(true);
@@ -168,6 +212,9 @@ function App() {
   return (
     <div className="App">
       <div className="controlHeader">
+        <Button onClick={openServerModal} variant="warning">
+          Set Server
+        </Button>
         <Button onClick={openAddModal} variant="primary">
           Add Device
         </Button>
@@ -196,6 +243,40 @@ function App() {
 
         <div className="footer"></div>
       </div>
+      {/* Server popup */}
+      <Modal
+        show={serverModal}
+        onHide={closeServerModal}
+        backdrop="static"
+        keyboard={false}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Set Server</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <InputGroup size="sm" className="mb-3">
+            <InputGroup.Text id="inputGroup-sizing-sm">
+              Server Ip
+            </InputGroup.Text>
+            <Form.Control
+              placeholder="0.0.0.0"
+              aria-label="small"
+              aria-describedby="inputGroup-sizing-sm"
+              onChange={handleServerIpChange}
+              value={newServerIp}
+            />
+          </InputGroup>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={closeServerModal}>
+            Cancel
+          </Button>
+          <Button onClick={setServerIP} variant="primary">
+            Set
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
       {/* Mode selection popup */}
       <Modal

@@ -5,7 +5,7 @@ import socket
 import time
 import math
 
-serverIp = "http://192.168.0.236:5000"
+serverIp = "http://192.168.0.187:5000"
 arduino = None  # Initialize arduino to None first
 
 # Function to attempt reconnecting to the serial port
@@ -13,7 +13,7 @@ def connect_serial():
     global arduino
     try:
         print("Attempting to reconnect to serial port...")
-        arduino = serial.Serial(port='/dev/ttyUSB0', baudrate=9600, timeout=0.1)
+        arduino = serial.Serial(port='COM6', baudrate=9600, timeout=0.1)
         print("Successfully reconnected to serial.")
     except serial.SerialException as e:
         print(f"Error reconnecting to serial")
