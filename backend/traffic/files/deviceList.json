@@ -1,13 +1,24 @@
 {
     "Master": {
         "type": "master",
-        "ip": "192.168.0.187",
+        "ip": "192.168.0.236",
         "status": 0,
-        "color": "red",
-        "timeLeft": 31,
+        "color": "green",
+        "timeLeft": 5,
         "mode": "auto",
         "manualColor": "green",
-        "lastReply": 1732665721.5409892,
+        "lastReply": 1732670835.389496,
+        "arduino": 1
+    },
+    "Device1": {
+        "type": "slave",
+        "ip": "192.168.0.187",
+        "status": 0,
+        "color": "green",
+        "timeLeft": 34,
+        "mode": "auto",
+        "manualColor": "yellow",
+        "lastReply": 1732670798.8457541,
         "arduino": 1
     }
 }
